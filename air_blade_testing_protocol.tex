@@ -3,56 +3,71 @@
 \usepackage{geometry}
 \geometry{a4paper, margin=1in}
 \usepackage{hyperref}
+\usepackage{amsmath}
 
-\title{ESC204: Air Blade Prototyping \& Verification Protocol}
+\title{ESC204: Comprehensive Air Blade Prototyping, Simulation \& Verification Protocol}
 \author{Jinesis Group \and Praxis Bot (Justin)}
 \date{\today}
 
 \begin{document}
 \maketitle
 
-\section{Objective}
-To rigorously verify the physical viability of the air blade clearing mechanism using accessible prototyping tools (Myhal fabrication or household items). This protocol replaces low-fidelity pulsed air sources (e.g., ball pumps) with continuous flow sources to accurately model the required fluid dynamics.
+\section{Project Context \& Overview}
+The system has evolved from a time-based DC motor cart to a precision linear actuator utilizing a Nema 17 stepper motor and A4988 driver. This track system will carry an air blade mechanism designed to clear debris (e.g., wet leaves) off a sloped roof. To satisfy the ESC204 rubrics, we must prove both the mechanical translation (the track) and the fluid dynamics (the air blade) through multi-fidelity verification: mathematical models, computational fluid dynamics (CFD), and physical hardware testing.
 
-\section{Equipment Required}
+\section{Packing List for Tomorrow's Prototyping}
+To ensure the session is productive and yields rubric-compliant data, bring the following items. 
+
+\subsection{What to BRING:}
 \begin{itemize}
-    \item \textbf{Continuous Air Source:} Hair dryer (set to cool) or shop vacuum exhaust.
-    \item \textbf{Converging Nozzle:} Custom 3D printed nozzle or cardboard/duct-tape funnel tapering to a 2mm--5mm slit.
-    \item \textbf{Test Surface:} Sloped cardboard or wood, surfaced with heavy-grit sandpaper or an actual asphalt shingle to accurately mimic roof friction.
-    \item \textbf{Force Measurement:} Digital kitchen scale.
-    \item \textbf{Test Debris:} Wet leaves (soaked and pressed onto the test surface).
-    \item \textbf{Visualization (Optional):} Sewing thread/yarn (for tuft testing) or room humidifier/vaporizer.
+    \item \textbf{Continuous Air Source:} Hair dryer (with a "cool" setting) or shop vacuum exhaust.
+    \item \textbf{Nozzle Fabrication Materials:} Cardboard, scissors, and duct tape to build a converging slit nozzle. (Alternatively, a 3D printed nozzle from Myhal).
+    \item \textbf{Test Surface (High Friction):} Heavy-grit sandpaper or a real asphalt shingle. \textit{(Do not use smooth cardboard or grass, as they fail to mimic roof fluid dynamics).}
+    \item \textbf{Measurement Tools:} Digital kitchen scale (for force testing) and a ruler/measuring tape.
+    \item \textbf{Test Debris:} Actual leaves from outside (to be soaked in water).
+    \item \textbf{Visualization Tools:} Sewing thread or yarn (for tuft testing), and tape.
+    \item \textbf{Electronics:} The assembled stepper motor track, A4988 driver, microcontroller, and 12V DC wall adapter.
 \end{itemize}
 
-\section{Testing Procedures}
+\subsection{What NOT to Bring:}
+\begin{itemize}
+    \item \textbf{Ball Pump:} Do not use a ball pump. It provides low-volume, pulsed bursts of air (high PSI, low CFM). An air blade requires continuous, planar, high-volume flow to create a boundary layer.
+\end{itemize}
+
+\section{Digital Validation: Math \& Simulations}
+Before physical testing, establishing a theoretical baseline neutralizes stakeholder rebuttals ("Will air even work?"). 
+
+\subsection{Mathematical Calculations}
+Calculate the drag force ($F_D$) required to overcome the static friction (stiction) of a wet leaf.
+\begin{equation}
+    F_D = \frac{1}{2} \rho v^2 C_D A
+\end{equation}
+Where $\rho$ is air density, $v$ is the air velocity from the nozzle, $C_D$ is the drag coefficient of the leaf, and $A$ is the cross-sectional area. Compare the required $F_D$ to the output force of the nozzle.
+
+\subsection{Online CFD Visualization}
+Use a free browser-based tool like \textbf{SimScale} or \textbf{SolidWorks Flow Simulation} (available on Myhal lab computers).
+\begin{itemize}
+    \item \textbf{Setup:} Create a simple 2D simulation of a narrow nozzle blowing air across a flat boundary at a $30^\circ$ angle.
+    \item \textbf{Goal:} Generate a velocity vector heat-map showing the "Coanda effect" (the air attaching to the surface) and the shear stress applied to the boundary layer. This visual proves the theoretical validity of the air blade.
+\end{itemize}
+
+\section{Physical Testing Protocols}
 
 \subsection{Test 1: Output Force Quantification}
-\textbf{Purpose:} Prove the nozzle generates sufficient force to overcome the static friction (stiction) of wet leaves.
-\begin{enumerate}
-    \item Mount a flat, rigid target (e.g., cardboard) vertically onto the digital kitchen scale.
-    \item Position the air nozzle exactly 10\,cm, 20\,cm, and 30\,cm away from the target.
-    \item Turn on the air source and record the maximum continuous mass reading in grams.
-    \item Convert grams to Newtons ($F = m \times 0.0098$) to establish the baseline continuous force.
-\end{enumerate}
+Tape a piece of cardboard vertically to the digital kitchen scale. Hold the nozzle horizontally and blow air at the cardboard from 10\,cm, 20\,cm, and 30\,cm. Record the mass reading in grams and convert to Newtons ($F = m \times 0.0098$). This establishes the actual force output of your continuous air source.
 
 \subsection{Test 2: Angle of Attack Optimization}
-\textbf{Purpose:} Determine the most efficient angle for shear flow generation and debris removal.
-\begin{enumerate}
-    \item Setup the textured sloped roof mock-up.
-    \item Adhere wet leaves to the surface.
-    \item Mount the air nozzle at fixed angles relative to the surface: $15^\circ$, $30^\circ$, and $45^\circ$.
-    \item Measure and record the time taken to dislodge the leaves at each angle from a standardized distance.
-\end{enumerate}
+Press wet leaves onto your textured sloped surface (sandpaper/shingle). Test the nozzle at $15^\circ$, $30^\circ$, and $45^\circ$ angles. Record which angle clears the leaves fastest. This demonstrates design optimization to the grading TAs.
 
-\subsection{Test 3: Fluid Flow Visualization (Coanda Effect)}
-\textbf{Purpose:} Visually prove the air attaches to the roof surface (boundary layer attachment) rather than dispersing prematurely.
-\begin{enumerate}
-    \item Tape 1-inch strips of yarn/thread across the roof surface mock-up (Tuft Test).
-    \item Blow the air blade across the surface; observe if the tufts lay flat against the slope.
-    \item Alternatively, use a room humidifier to introduce mist into the intake or flow path to capture the shear layer on video.
-\end{enumerate}
+\subsection{Test 3: Fluid Flow Visualization (Tuft Test)}
+Tape 1-inch strips of thread across the test surface. Turn on the air blade. The tufts should lay flat against the surface, physically proving the air is attaching to the roof and creating a shear layer, corroborating the CFD simulation.
 
-\section{Verification Matrix Integration}
-The data collected from these tests must be directly linked back to the Engineering Specifications in the Design Dossier. For example, comparing the Newtons of force measured in Test 1 to the calculated minimum force required to break wet leaf stiction.
+\section{Code \& Track Integration}
+Once the stationary air blade is optimized, it must be integrated with the microcontroller code.
+\begin{itemize}
+    \item \textbf{Logic Integration:} Ensure the microcontroller code effectively utilizes the STEP and DIR pins of the A4988. 
+    \item \textbf{Dynamic Testing:} Mount the optimized air nozzle to the moving track carriage. Run the stepper motor to translate the nozzle across the 60\,cm track while the continuous air source is active.
+    \item \textbf{Verification:} Verify that the combined forward motion of the track and the planar flow of the air blade can clear a line of wet leaves without the track stalling under the resistance of the air hose.
+\end{itemize}
 
 \end{document}
