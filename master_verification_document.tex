@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+\title{ESC204 Master Verification: Systems Integration \& Fluid Dynamics}
+\author{Jinesis Group \and Praxis Bot}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{System Integration \& Mechanical Verification}
+\subsection{The Automated Ridge Track}
+The core mechanical verification involved testing the complete integration of the motor-driven ridge track, the pulley system, and the dual-nozzle carriage. The objective was to verify that the Stepper/Pico architecture could autonomously drive the clearing mechanism back and forth across the 60\,cm track without stalling, slipping, or overheating.
+
+\subsection{Performance \& Thermal Tuning}
+A critical design decision during integration was the thermal management of the A4988 stepper driver. To ensure the system could run continuously without entering thermal shutdown, the driver's current-limiting potentiometer ($V_{REF}$) was manually tuned to approximately 50\% capacity. This tuning establishes the optimal balance: it provides sufficient current to maintain the holding torque required to pull the carriage and air hose via the pulley system, while strictly capping the amperage to prevent the IC from overheating. 
+
+\subsection{Results \& Evidence}
+The integrated system successfully completed multiple continuous cycles. The carriage smoothly traversed the track, physically actuating the limit switches at the extremities. The CircuitPython logic correctly captured these state changes and executed immediate direction reversals. Verification protocol mandated a minimum of 2 complete passes; the system successfully ran a continuous 2-minute cycle, vastly exceeding the specification without thermal throttling.
+\newline
+\textbf{Video Artifacts (Track Automation):} \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J?usp=sharing}{View Google Drive Folder} \textit{(Contains 8-second clip and full 2-minute continuous endurance test).}
+
+\section{Fluid Dynamics \& Clearing Efficiency}
+\subsection{Aerodynamic Angle Justification}
+A fixed angle of attack of $30^\circ$ was selected for the nozzle carriage. Research into industrial air knives indicates that an angle between $25^\circ$ and $35^\circ$ provides the optimal vector decomposition for surface clearing. At exactly $30^\circ$, the air stream generates sufficient normal force ($F_y$) to maintain boundary layer attachment (Coanda effect) and penetrate beneath the debris, while maximizing the tangential shear stress ($F_x$) required to propel the mass forward. Steeper angles cause downward pinning (stiction amplification), while shallower angles deflect harmlessly over the debris profile.
+
+\subsection{The "Wet Debris" and Distance Trials}
+Testing confirmed the $30^\circ$ geometry's effectiveness. At a far range of 50\,cm, the pure Circular Nozzle suffered from turbulent diffusion, clearing only a narrow central strip. The Custom Air Blade maintained a wide, coherent planar shear layer. 
+
+During the critical "Wet Debris" test (maximizing static friction), the geometric differences were stark:
+\begin{itemize}
+    \item \textbf{Circular Nozzle ($30^\circ$):} Failed. The localized impact force pinned the wet tissue paper against the 40-grit sandpaper surface.
+    \item \textbf{Custom Air Blade ($30^\circ$):} Succeeded. The planar slit generated sheer stress that slipped beneath the water/sandpaper barrier, successfully peeling and ejecting the debris.
+\end{itemize}
+
+\textbf{Video Artifacts (Air Blade Trials):} \href{https://drive.google.com/drive/folders/1RAJA95EF-XjMrkhjWkuoIBbONH_DbRVu?usp=drive_link}{View Google Drive Folder} \textit{(Contains 8 documented trials: dry circular, dry nozzle, and wet stress-tests).}
+
+\end{document}
