@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{ESC204 Verification Data: Air Blade Fluid Dynamics \& Clearing Efficiency}
+\author{Jinesis Group \and Praxis Bot}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Experimental Overview}
+Building upon the force-magnitude tests (which verified total force conservation at $\sim$1.96N), Tests 2 and 3 were designed to evaluate the physical clearing efficiency of the Custom Air Blade geometry against a standard circular output (pure Dyson). The core hypothesis asserts that a narrow planar slit (air blade) converts continuous volumetric flow into a high-velocity shear layer that utilizes the Coanda effect to peel debris, making it significantly more effective than the localized, high-pressure stagnation point created by a circular nozzle.
+
+\section{Methodology \& Setup}
+A scaled roof mock-up was constructed measuring 35\,cm in length and 15\,cm in width. To accurately model the high-friction surface of asphalt shingles, 40-grit aluminum oxide sandpaper was securely affixed to the cardboard substrate. 
+\begin{itemize}
+    \item \textbf{Angle of Attack:} The roof was set at a fixed $30^\circ$ incline. The nozzles were mounted to a custom frame, measured with a protractor, to ensure the airflow was perfectly parallel to the $30^\circ$ surface. Axial alignment was verified by a secondary observer to eliminate angular bias.
+    \item \textbf{Debris Model:} Disaggregated tissue paper was used to simulate both dry and wet autumnal debris.
+    \item \textbf{Distance Variables:} Measurements were taken with the nozzle positioned at $d = 10\,$cm, $d = 25\,$cm, and $d = 50\,$cm from the leading edge of the roof mock-up.
+    \item \textbf{Control Parameters:} Three distinct trial sets were run for each configuration to ensure statistical reliability. Only one set was recorded via video due to the high consistency of the observed phenomena. 
+\end{itemize}
+
+\section{Empirical Observations \& Analysis}
+
+\subsection{Close Range ($d = 10\,$cm)}
+At 10\,cm, the proximity to the high-velocity output negated the geometric differences. Both the Custom Air Blade and the Circular Nozzle produced sufficient instantaneous impact force to clear the dry debris entirely. \textit{Observation: Geometrical advantages are marginalized when the target is within the immediate high-pressure zone.}
+
+\subsection{Medium Range ($d = 25\,$cm)}
+At 25\,cm, fluid dynamic divergence became apparent. While both nozzles successfully cleared the debris, the Custom Air Blade ejected the tissue paper significantly higher and further off the mock-up. 
+\textbf{Engineering Hypothesis:} The planar shear layer maintains its laminar structure longer than the circular column, allowing the high-velocity air to penetrate \textit{underneath} the boundary layer of the debris (peeling), rather than merely impacting its leading edge. 
+
+\subsection{Far Range ($d = 50\,$cm)}
+At 50\,cm, the Circular Nozzle suffered from severe turbulent diffusion. It cleared a narrow, localized central path, leaving substantial debris along the 15\,cm lateral edges. Conversely, the Custom Air Blade maintained a wide, uniform coverage area, sweeping the entire width of the track. 
+\textbf{Conclusion:} The diverging planar flow of the Custom Air Blade provides superior lateral clearing efficiency, which is critical for a moving carriage to minimize required passes.
+
+\subsection{The "Wet Debris" Stress Test ($d = 50\,$cm)}
+The final test introduced heavily saturated tissue paper, maximizing static friction (stiction) and minimizing the aerodynamic profile of the debris. 
+\begin{itemize}
+    \item \textbf{Circular Nozzle:} Exhibited near-total failure. The circular impact force pushed \textit{down} on the wet tissues, pinning them to the 40-grit surface and only clearing a few central pieces.
+    \item \textbf{Custom Air Blade:} Successfully peeled and ejected the wet debris. 
+\end{itemize}
+\textbf{Engineering Justification:} Water increases surface tension and drastically reduces the geometric irregularities that air can "grab" onto. The Circular Nozzle relies on impact drag against a vertical profile. The Custom Air Blade, however, generates extreme shear stress at the boundary layer interface, slipping between the water/sandpaper barrier and overcoming the stiction forces. 
+
+\section{Integration with CAD \& Simulation}
+The $30^\circ$ angle of attack utilized in this physical test directly correlates to the SolidWorks flow simulations and mathematical drag calculations conducted by the CAD team (Rihanna). The empirical success of the $30^\circ$ planar shear layer validates the theoretical models, confirming that the nozzle geometry must be fabricated to maintain this precise angle relative to the roof pitch during automated carriage translation.
+
+\end{document}
