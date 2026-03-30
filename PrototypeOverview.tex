@@ -18,7 +18,6 @@
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{multicol}
-\usepackage{wrapfig}
 
 \titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
 \titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
@@ -32,197 +31,146 @@
 \graphicspath{{images/}}
 \setlength{\parskip}{2pt plus 1pt minus 1pt}
 \setlength{\parindent}{0pt}
-\setlength{\floatsep}{4pt plus 2pt minus 2pt}
-\setlength{\textfloatsep}{4pt plus 2pt minus 2pt}
-\setlength{\intextsep}{4pt plus 2pt minus 2pt}
+\setlength{\floatsep}{3pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{3pt plus 1pt minus 1pt}
+\setlength{\intextsep}{3pt plus 1pt minus 1pt}
 \setlength{\abovecaptionskip}{2pt}
 \setlength{\belowcaptionskip}{0pt}
 
 \begin{document}
 
-% ============================================================
-% TITLE
-% ============================================================
 \begin{center}
     {\LARGE\textbf{Prototype Overview}}\\[2pt]
     {\normalsize Team 0109D (StepUp) \quad$\vert$\quad ESC204 \quad$\vert$\quad Winter 2026}
 \end{center}
-\vspace{-2pt}
-\noindent\rule{\textwidth}{0.6pt}
-\vspace{4pt}
+\vspace{-2pt}\noindent\rule{\textwidth}{0.6pt}\vspace{3pt}
 
 % ============================================================
-% 1  INTRODUCTION
+% 1  INTRODUCTION + AS-BUILT
 % ============================================================
-\section{Introduction}
+\section{Introduction and System Description}
 
-This document presents our as-built prototype, the iterative process that led to it, and verification results against our specification. The prototype was built collaboratively: Memo led fluid dynamics testing and data; Markiyan built the CircuitPython firmware and stepper logic; Kimmy developed the specification matrix and verification protocols; Rihanna led CAD, 3D print submissions, and the engineering notebook; Hannah coordinated procurement and test setup; and Karys contributed CAD, verification, and documentation. Artifacts in the Design Dossier (\texttt{04.1}--\texttt{04.4}) are referenced throughout.
-
-% ============================================================
-% 2  SYSTEM DESCRIPTION + AS-BUILT PHOTO
-% ============================================================
-\section{High-Level System Description}
-
-The prototype is an \textbf{automated, motor-driven ridge track with a dual-sided air nozzle carriage}. It verifies the core clearing mechanism of our Design Concept: a linear track that translates a high-velocity planar air blade along a roof ridge to dislodge wet debris without physical contact.
+Our prototype is an \textbf{automated, motor-driven ridge track with a dual-sided air nozzle carriage} that verifies the clearing mechanism of our Design Concept: translating a high-velocity planar air blade along a roof ridge to dislodge wet debris without physical contact. It was built collaboratively: Memo led fluid dynamics testing; Markiyan built the firmware and stepper logic; Kimmy developed the specification and verification protocols; Rihanna led all CAD, 3D print submissions, and the engineering notebook; Hannah coordinated procurement and test hosting; and Karys contributed CAD, documentation, and verification.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.65\textwidth]{V2RidgeTrackSystem.jpeg}
-\caption{As-built prototype: 60\,cm aluminum T-slot track with V2 pulleys, GT2 timing belt, Nema\,17 stepper motor, and nozzle carriage. D2FS-FL-N limit switches visible at each end. See also: \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{track overview video}}.}
+\includegraphics[width=0.55\textwidth]{V2RidgeTrackSystem.jpeg}
+\caption{As-built prototype (V2): 60\,cm aluminum T-slot track, V2 pulleys with indented TPU belt, Nema\,17 stepper, nozzle carriage, and D2FS-FL-N limit switches at each end. \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{[Track overview video]}}}
 \label{fig:asbuilt}
 \end{figure}
 
 \vspace{-4pt}
-\begin{itemize}
-    \item \textbf{Translation:} Nema\,17 stepper motor, A4988 driver, GT2 timing belt with custom 3D-printed pulleys, Raspberry Pi Pico (CircuitPython) with limit-switch-based reversal. 60\,cm track, 56\,cm active travel.
-    \item \textbf{Clearing:} Dyson hair dryer (abstracting the final compressor; see \texttt{Air\_Source\_Abstraction\_Justification.pdf} in \texttt{04.4}) through a custom converging slit nozzle at 30$^\circ$, producing a planar shear layer. The carriage is dual-sided for bidirectional clearing.
-\end{itemize}
+The system has two functional halves: \textbf{(1) Translation} (Nema\,17 stepper + A4988 driver + GT2 belt + Pico with limit-switch reversal, traversing a 60\,cm track) and \textbf{(2) Clearing} (Dyson hair dryer through a custom converging slit nozzle at 30$^\circ$, producing a planar shear layer; see \texttt{Air\_Source\_Abstraction\_Justification.pdf} in \texttt{04.4} for the Dyson abstraction rationale). The architecture maps directly to our Phase\,2 subsystems (Electrical, Mechanical, Software); full mapping table in \href{https://github.com/memo-ozdincer/ESC203-AI-Prototypes/blob/master/dossier_artifacts/PraxisCode.py}{\texttt{PraxisCode.py}} and the \texttt{Specification.xlsx} in \texttt{04\_Prototype}.
 
 % ============================================================
-% 3  SYSTEM ARCHITECTURE
+% 2  TRACK & PULLEY ITERATIONS
 % ============================================================
-\section{System Architecture}
+\section{Track \& Pulley System Iterations}
 
-\vspace{-2pt}
-\begin{table}[H]
-\centering\small
-\caption{Design Concept $\rightarrow$ Prototype realization, by subsystem.}
-\label{tab:arch}
-\begin{tabularx}{\textwidth}{@{}l X X@{}}
-\toprule
-\textbf{Element} & \textbf{Prototype Realization} & \textbf{Detail / Artifact} \\
-\midrule
-\multicolumn{3}{@{}l}{\textit{\textbf{Electrical}}} \\
-Power       & Dual-rail: 5\,V USB (logic) + 12\,V DC adapter (motor) & Prevents brownouts (\S\ref{sec:power}) \\
-Motor       & Nema\,17 stepper + A4988 driver  & 200 steps/rev, 0.2\,mm/step \\
-Sensors     & 2$\times$ D2FS-FL-N limit switches (NO, pull-up) & GP15 \& GP16 on Pico \\
-Air Source   & Dyson hairdryer (continuous, high-CFM) & Justification in \texttt{04.4} \\
-Enclosure   & Insulated electronics box & Photo: \texttt{ClosureElectrical.jpeg} \\
-\midrule
-\multicolumn{3}{@{}l}{\textit{\textbf{Mechanical}}} \\
-Track       & 3$\times$20\,cm aluminum T-slot extrusions (60\,cm total)  & Ordered from MYFab (Mar 11, 19) \\
-Drive       & GT2 belt + 20-tooth 3D-printed pulleys (V2) & 40\,mm/rev; see \S\ref{sec:pulley} \\
-Carriage    & Dual-sided nozzle cart (bidirectional clearing) & Affixed to belt \\
-\midrule
-\multicolumn{3}{@{}l}{\textit{\textbf{Software}}} \\
-Controller  & Raspberry Pi Pico (CircuitPython) & \href{https://github.com/memo-ozdincer/ESC203-AI-Prototypes/blob/master/dossier_artifacts/PraxisCode.py}{\texttt{PraxisCode.py}} \\
-Logic       & Polling GP15/GP16 $\rightarrow$ instant DIR reversal; 4-cycle auto-stop & \texttt{04.2\_Build/Software} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-% ============================================================
-% 4  KEY DESIGN DECISIONS
-% ============================================================
-\section{Key Design Decisions}
-
-\subsection{Motor \& Driver Evolution}
-\label{sec:motor}
-
-The drivetrain went through three iterations. Each was abandoned after a specific failure during testing.
+The mechanical drivetrain went through two major versions. Hannah submitted all MYFab orders; Rihanna led the CAD redesigns. Full iteration photos (red/blue border comparisons) and the \textit{List of Changes During Integration} document are in \texttt{04.3\_Integration}.
 
 \begin{figure}[H]
 \centering
 \begin{minipage}[t]{0.48\textwidth}
     \centering
-    \includegraphics[width=\textwidth, height=4.5cm, keepaspectratio]{HBridge_Motor_Iteration2.jpeg}
-    \caption{Motor substitution: the original 3--6\,V DC gearmotor (yellow, left) next to the final Nema\,17 stepper (right). The DC motor could not perform dead reckoning under variable load. \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{[Jitter failure video]}}}
-    \label{fig:motor}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\textwidth, height=4.5cm, keepaspectratio]{ClosureElectrical.jpeg}
-    \caption{Final electrical architecture: A4988 driver, screw-terminal power distribution, and Pico inside the insulated enclosure. Isolated 5\,V logic / 12\,V motor rails visible. Photos of all 3 iterations in \texttt{04.2\_Build/Electronics}.}
-    \label{fig:electrical}
-\end{minipage}
-\end{figure}
-
-\vspace{-6pt}
-\begin{table}[H]
-\centering\small
-\caption{Electrical iteration history. All iteration photos and the jitter failure video are in \texttt{04.3\_Integration}.}
-\begin{tabularx}{\textwidth}{@{}l l X l@{}}
-\toprule
-\textbf{Iter.} & \textbf{Config} & \textbf{Failure / Outcome} & \textbf{Artifact} \\
-\midrule
-1 & DC motor + breadboard + 9\,V & No positional accuracy; dead reckoning impossible & \texttt{DC\_Motor\_*.jpeg} \\
-2 & DC motor + L298N H-Bridge & Voltage drops under load $\rightarrow$ stall and jitter & \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{Video}} \\
-3 & Nema\,17 + A4988 + screw terminals & Resolved: mm-precise stepping, no jitter & Fig.~\ref{fig:electrical} \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsection{Pulley System Iterations}
-\label{sec:pulley}
-
-\begin{figure}[H]
-\centering
-\begin{minipage}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\textwidth, height=4.0cm, keepaspectratio]{V1BrokenPulleyAxle.jpeg}
-    \caption{V1 failure: axle bent under belt tension. FDM printed in a teardrop cross-section (required sanding). L-shaped bracket corners also deformed.}
+    \includegraphics[width=\textwidth, height=4.2cm, keepaspectratio]{V1BrokenPulleyAxle.jpeg}
+    \caption{V1 failure: axle bent under belt tension. FDM printed a teardrop cross-section instead of circular; sanding helped but the thin geometry could not hold. L-bracket corners also deformed. \textit{Photo:} \texttt{04.3}.}
     \label{fig:v1axle}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.48\textwidth}
     \centering
-    \includegraphics[width=\textwidth, height=4.0cm, keepaspectratio]{BeltWithIndentations.jpeg}
-    \caption{V2 solution: TPU belt redesigned in CAD with molded grip indents (visible). V1 belt was smooth and slipped; hot glue also failed on TPU. See also: \texttt{OldTimingBelt.png}, \texttt{V1vsV2PulleyAxle}.}
+    \includegraphics[width=\textwidth, height=4.2cm, keepaspectratio]{BeltWithIndentations.jpeg}
+    \caption{V2 TPU belt with CAD-designed grip indents (visible ridges). V1 belt was smooth and slipped on pulleys; hot glue also failed on TPU. Compare with \texttt{OldTimingBelt.png} and \texttt{V1vsV2PulleyAxle} in \texttt{04.3}.}
     \label{fig:v2belt}
 \end{minipage}
 \end{figure}
 
-\vspace{-6pt}
+\vspace{-4pt}
 \begin{table}[H]
 \centering\small
-\caption{Mechanical iteration summary. Full photo set (red/blue border comparisons) in \texttt{04.2\_Build} and \texttt{04.3\_Integration}.}
+\caption{Full mechanical iteration history. Photos and videos of each version in \texttt{04.2\_Build/Mechanical} and \texttt{04.3\_Integration}. Videos: \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{TensionInAxlePulley.mov}}, \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{V2RidgeTrackMovement.MOV}}.}
+\label{tab:mech}
 \begin{tabularx}{\textwidth}{@{}l X X@{}}
 \toprule
-\textbf{Part} & \textbf{V1 (Failed)} & \textbf{V2 (Final)} \\
+\textbf{Component} & \textbf{V1 (Failed)} & \textbf{V2 (Final)} \\
 \midrule
-Axles    & Thin; teardrop FDM artifact; bent under tension (Fig.~\ref{fig:v1axle}) & Thicker center; true circular cross-section \\
-Brackets & L-shaped $\rightarrow$ deformed & Triangle-reinforced; rigid \\
-Belt     & Smooth TPU $\rightarrow$ slipped (hot glue failed) & Indented TPU (Fig.~\ref{fig:v2belt}) \\
-Track    & 40\,cm (2 extrusions, too short) & 60\,cm (3 extrusions, Mar 19) \\
+Track  & 40\,cm (2$\times$20\,cm extrusions, Mar\,11). Too short for meaningful travel. & 60\,cm (3$\times$20\,cm, Order \#3 Mar\,19). 56\,cm active between switches. \\
+Axles  & Thin; teardrop FDM artifact (Fig.\,\ref{fig:v1axle}). Bent under tension. & Thicker center; true circular. Confirmed with MYFab mentor Mar\,10. \\
+Brackets & L-shaped corners deformed under belt load. & Triangle-reinforced gussets; rigid under load. \\
+Belt   & Smooth TPU slipped on pulleys. Hot glue failed on TPU. & Indented TPU with grip teeth (Fig.\,\ref{fig:v2belt}). GT2 pitch, 20-tooth. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Power Segregation \& Thermal Tuning}
-\label{sec:power}
+% ============================================================
+% 3  NOZZLE ITERATIONS
+% ============================================================
+\section{Nozzle Design Evolution}
 
-\textbf{Power:} Shared rail caused Pico brownouts during motor draw. Fixed by isolating 5\,V USB (Pico logic, 3.3\,V to A4988 $V_{DD}$) from 12\,V DC adapter ($V_{MOT}$).
-\textbf{Thermal:} A4988 $V_{REF}$ tuned to ${\sim}50\%$ to prevent thermal shutdown while holding torque.
-\textbf{Firmware:} Polling-based state machine on GP15/GP16; instant DIR reversal on switch trigger; 4-cycle auto-stop after 2 round trips. Source: \href{https://github.com/memo-ozdincer/ESC203-AI-Prototypes/blob/master/dossier_artifacts/PraxisCode.py}{\texttt{PraxisCode.py}}.
+The nozzle is the core of the clearing subsystem. Rihanna designed the custom air blade geometry in SolidWorks; the 30$^\circ$ angle of attack was justified by vector decomposition of the airflow into normal ($F_y$) and tangential ($F_x$) components. STL files for all nozzle versions are in \texttt{04.2\_Build/Mechanical/3D Print Files}.
+
+The Design Concept originally planned a ball pump as the air source, but early testing showed it only produces pulsed, low-volume bursts, which cannot sustain the boundary-layer shear needed for clearing. The team pivoted to a Dyson hair dryer for continuous high-CFM flow. With a reliable air source established, the design variable became the \textbf{nozzle exit geometry}: the question was whether reshaping the circular Dyson output into a narrow planar slit would improve clearing.
+
+The prototype nozzle is a converging channel that compresses the circular airflow into a thin, wide slit. This produces a high-velocity planar shear layer (an ``air blade'') rather than a localized impact column. The carriage mount holds this nozzle at a fixed 30$^\circ$ relative to the roof surface. At 30$^\circ$, the $F_y$ component provides enough downward pressure for Coanda-effect boundary attachment (the air ``sticks'' to the surface and gets under debris) without being so steep that it pins debris down. The $F_x$ component is maximized to sweep dislodged material down the slope. Angles above 45$^\circ$ pin debris via static friction; below 15$^\circ$, airflow deflects over the debris entirely.
+
+The physical nozzle cart is dual-sided, meaning it has slit exits on both sides of the carriage, enabling clearing on both the forward and reverse pass. Nozzle CAD design decisions are documented in \texttt{04.2\_Build/Mechanical/Air Nozzle + Cart CAD design decision.docx}; V1 and V2 STL files in the \texttt{3D Print Files} subfolder.
 
 % ============================================================
-% 5  DESIGN PROCESS
+% 4  ELECTRICAL & FIRMWARE ITERATIONS
 % ============================================================
-\section{Prototype Design Process}
+\section{Electrical \& Firmware Iterations}
 
-\subsection{Integration Changes}
+The electrical subsystem iterated three times (Markiyan led). Each version was abandoned after a specific failure.
 
-Six changes bridged individual subsystems into a working system (\texttt{04.3\_Integration}; \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{integration videos}}):
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth, height=4.2cm, keepaspectratio]{HBridge_Motor_Iteration2.jpeg}
+    \caption{Motor swap: original 3--6\,V DC gearmotor (yellow) vs.\ final Nema\,17 stepper. DC motor had no positional accuracy under variable load. \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{[Jitter failure video]}}}
+    \label{fig:motor}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth, height=4.2cm, keepaspectratio]{ClosureElectrical.jpeg}
+    \caption{Final enclosure: A4988 driver, Pico, screw-terminal power blocks with isolated 5\,V/12\,V rails. All iterations documented in \texttt{04.2\_Build/Electronics/Design Process of electronics.docx}.}
+    \label{fig:elec}
+\end{minipage}
+\end{figure}
 
-\begin{enumerate}
-    \item \textbf{Motor:} DC $\rightarrow$ Nema\,17 stepper (\S\ref{sec:motor}). \textit{Video:} \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{StruggleswithMovementTrack.mov}
-    \item \textbf{Driver:} L298N H-Bridge $\rightarrow$ A4988 + screw terminals.
-    \item \textbf{Power:} Single rail $\rightarrow$ isolated 5\,V / 12\,V (\S\ref{sec:power}).
-    \item \textbf{Thermal:} $V_{REF}$ calibrated to 50\%.
-    \item \textbf{Firmware:} \texttt{time.sleep()} $\rightarrow$ reactive polling state machine.
-    \item \textbf{Deadzone:} Limit switches take ${\sim}$2\,cm/end; nozzle overhangs 2\,cm each side $\rightarrow$ 100\% coverage.
-\end{enumerate}
+\vspace{-4pt}
+\begin{table}[H]
+\centering\small
+\caption{Electrical iteration history. Photos: \texttt{04.2\_Build/Electronics}. Videos: \texttt{04.3\_Integration}.}
+\begin{tabularx}{\textwidth}{@{}c l X l@{}}
+\toprule
+& \textbf{Configuration} & \textbf{Failure / Outcome} & \textbf{Artifact} \\
+\midrule
+1 & DC motor + breadboard + 9\,V & No dead reckoning; position drifts under load & \texttt{DC\_Motor\_*.jpeg} \\
+2 & DC motor + L298N H-Bridge & Voltage drop $\rightarrow$ stall and jitter & \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{Jitter video}} \\
+3 & Nema\,17 + A4988 + screw terminals & 0.2\,mm/step precision, no jitter & Fig.\,\ref{fig:elec} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\subsection{Verification}
+\vspace{-4pt}
+\textbf{Power segregation:} Shared power rail caused Pico brownouts. Fixed by isolating 5\,V USB logic from 12\,V motor adapter. \textbf{Thermal tuning:} A4988 $V_{REF}$ tuned to ${\sim}$50\% to prevent thermal shutdown. \textbf{Firmware:} Polling of limit switches on GP15/GP16 (pull-up); instant DIR reversal when triggered; 4-cycle auto-stop after 2 round trips. \textbf{Deadzone fix:} Switches take ${\sim}$2\,cm per end, so nozzle overhangs 2\,cm each side for 100\% coverage. Source: \href{https://github.com/memo-ozdincer/ESC203-AI-Prototypes/blob/master/dossier_artifacts/PraxisCode.py}{\texttt{PraxisCode.py}} in \texttt{04.2\_Build/Software}.
 
-Three-test protocol (Magnitude $\rightarrow$ Geometry $\rightarrow$ Wet Stiction) plus mechanical endurance. Full data and protocols in \texttt{04.4\_Verification}. All 8 nozzle trial videos: \href{https://drive.google.com/drive/folders/1RAJA95EF-XjMrkhjWkuoIBbONH_DbRVu}{\textit{[Google Drive]}}.
+% ============================================================
+% 5  VERIFICATION: THE THREE-TEST CHAIN
+% ============================================================
+\section{Verification: Force $\rightarrow$ Geometry $\rightarrow$ Wet Stiction}
 
-\subsubsection{Test 1: Force Quantification}
-Dyson (max) aimed at a digital scale with 14$\times$14\,cm target at four distances.
+We designed a structured three-test verification chain, each building on the previous. All raw data and protocols are in the \texttt{Verification Protocol+Results.xlsx} spreadsheet in \texttt{04.4}. All 8 nozzle test videos: \href{https://drive.google.com/drive/folders/1RAJA95EF-XjMrkhjWkuoIBbONH_DbRVu}{\textit{[Google Drive: circular\_vs\_nozzle]}}.
+
+\subsection{Test 1: Do we have enough force? (Magnitude)}
+
+We taped a rigid cardboard target to a digital kitchen scale and blew the Dyson at it from 4, 8, 12, and 16\,cm across three nozzle geometries. This establishes the raw force baseline before any geometry optimization.
 
 \vspace{-2pt}
 \begin{table}[H]
 \centering\small
-\caption{Force output (N) vs.\ distance. Baseline $\approx 200$\,g ($\sim$1.96\,N).}
+\caption{Measured force (N). All geometries conserve $\sim$1.96\,N within 12\,cm.}
 \label{tab:force}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
@@ -236,40 +184,44 @@ Custom Air Blade (Ours) & 1.96 & 1.95 & 1.93 & 1.72 \\
 \end{table}
 
 \vspace{-4pt}
-Force is conserved ($\sim$1.96\,N) across geometries within 12\,cm. Geometry redistributes force into planar shear rather than increasing it. Sharp drop at 16\,cm means the nozzle must stay within 12\,cm of the roof.
+\textbf{Finding:} Total force is conserved across geometries (mass-flow conservation). Reshaping the exit does not create more force; it \textit{redistributes} it into planar shear. Sharp drop at 16\,cm means the nozzle must stay within 12\,cm of the surface. Having confirmed sufficient magnitude, we moved to geometry optimization.
 
-\subsubsection{Test 2: Distance \& Angle Optimization}
-30$^\circ$ roof mock-up (35$\times$15\,cm, 40-grit sandpaper simulating shingles) at $d = 10$, 25, 50\,cm. Three trials per config.
+\subsection{Test 2: Which geometry clears better? (Distance \& Angle)}
+
+We built a 30$^\circ$ roof mock-up (35$\times$15\,cm, 40-grit aluminum oxide sandpaper simulating shingles), measured angles with a protractor and alignment frame (axial alignment verified by a second observer), and tested at $d = 10$, 25, and 50\,cm. Three trial sets per configuration. Dry tissue paper simulated loose debris.
 
 \vspace{-2pt}
 \begin{table}[H]
 \centering\small
-\caption{Clearing comparison at 30$^\circ$. Videos of each trial: \href{https://drive.google.com/drive/folders/1RAJA95EF-XjMrkhjWkuoIBbONH_DbRVu}{\textit{[Google Drive]}}.}
+\caption{Clearing results. Individual trial videos: \href{https://drive.google.com/drive/folders/1RAJA95EF-XjMrkhjWkuoIBbONH_DbRVu}{\textit{nozzle\_distance1/2/3.mov, circular\_distance1/2/3.mov}}.}
 \label{tab:clearing}
 \begin{tabularx}{\textwidth}{@{}l X X@{}}
 \toprule
-\textbf{Distance} & \textbf{Circular Nozzle} & \textbf{Custom Air Blade} \\
+\textbf{Dist.} & \textbf{Circular Nozzle} & \textbf{Custom Air Blade} \\
 \midrule
-10\,cm & Both clear; geometry negligible & Both clear \\
-25\,cm & Lower, shorter ejection & Higher, further; shear gets \textit{under} debris \\
-50\,cm & Narrow center only; lateral residue & Full 15\,cm sweep; coherent planar coverage \\
+10\,cm & Both clear. Geometry negligible at close range. & Both clear. \\
+25\,cm & Debris blown lower, shorter distance. & Ejected higher and further. Shear layer penetrates \textit{under} debris. \\
+50\,cm & Narrow central path only. Heavy lateral residue from turbulent diffusion. & Full 15\,cm uniform sweep. Coherent planar coverage. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \vspace{-4pt}
-30$^\circ$ balances $F_y$ (Coanda boundary attachment, no pinning) against $F_x$ (tangential shear). $>$45$^\circ$ pins debris; $<$15$^\circ$ deflects over it. \textit{(O-4.2-STRU-1.)}
+At close range both work. At distance, the air blade maintains a coherent wide sweep while the circular nozzle diffuses into a narrow, weak column. Having confirmed geometry matters, we escalated to worst-case conditions.
 
-\subsubsection{Test 3: Wet Debris Stiction}
-Saturated tissue on 40-grit sandpaper at $d = 50$\,cm (worst case; see \texttt{Debris\_Model\_Justification.pdf} in \texttt{04.4}):
+\subsection{Test 3: Can it clear worst-case wet debris? (Stiction Stress Test)}
+
+Same setup at $d = 50$\,cm, but with \textbf{heavily saturated tissue paper} pressed onto the 40-grit sandpaper. This maximizes stiction and eliminates any aerodynamic profile (see \texttt{Debris\_Model\_Justification.pdf} in \texttt{04.4} for why this is a conservative worst-case analogue).
 
 \begin{itemize}
-    \item \textbf{Circular:} \textcolor{red}{\textbf{FAILED.}} Pinned wet tissue flat. \href{https://drive.google.com/file/d/1wO-Wh8iFGygEvBvc3OOH91XQSwhoY_Ws/view}{\textit{[Video]}}
-    \item \textbf{Air Blade:} \textcolor{green!50!black}{\textbf{PASSED.}} Shear layer peeled debris off surface. \href{https://drive.google.com/file/d/16htpF3ptwKEM5UxYE679x3f3xWmt80h1/view}{\textit{[Video]}}
+    \item \textbf{Circular Nozzle (30$^\circ$):} \textcolor{red}{\textbf{FAILED.}} High-pressure column pinned the flat wet tissue \textit{harder} against the surface. Only a few central pieces dislodged.
+    \href{https://drive.google.com/file/d/1wO-Wh8iFGygEvBvc3OOH91XQSwhoY_Ws/view}{\textit{[Video: circular\_wet\_test.mov]}}
+    \item \textbf{Custom Air Blade (30$^\circ$):} \textcolor{green!50!black}{\textbf{PASSED.}} Planar shear layer slipped beneath the water/sandpaper interface and peeled the saturated debris off.
+    \href{https://drive.google.com/file/d/16htpF3ptwKEM5UxYE679x3f3xWmt80h1/view}{\textit{[Video: nozzle\_wet\_test.mov]}}
 \end{itemize}
 
-\subsubsection{Endurance Test}
-Continuous 2-minute cycle (exceeding 2-pass minimum). Zero stalling, belt held tension through reversals, A4988 within thermal limits. 56\,cm in 22\,s ($v \approx 2.55$\,cm/s). \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{[Full cycle video]}} \textit{(O-1.1-ELEC-1, O-1.3-SOFT-1, O-3.2-ELEC-1.)}
+\subsection{Endurance Test (Mechanical)}
+Continuous 2-minute cycle, far exceeding the 2-pass spec. Zero stalling; belt held tension through reversals; A4988 within thermal limits. 56\,cm in 22\,s ($v \approx 2.55$\,cm/s). \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{[Full cycle video; Stopping\_at\_end\_of\_cycle.mp4]}}
 
 % ============================================================
 % 6  SPECS
@@ -279,7 +231,7 @@ Continuous 2-minute cycle (exceeding 2-pass minimum). Zero stalling, belt held t
 \vspace{-2pt}
 \begin{table}[H]
 \centering\small
-\caption{All 11 specs passed. Full protocol and results in \texttt{04.4\_Verification/VerificationProtocol+Results.xlsx}.}
+\caption{All 11 specs passed. Full protocol: \texttt{VerificationProtocol+Results.xlsx} in \texttt{04.4\_Verification}.}
 \label{tab:specs}
 \begin{tabularx}{\textwidth}{@{}l X c l@{}}
 \toprule
@@ -301,28 +253,14 @@ O-3.2-SOFT-1 & OFF state: motors inactive                           & \textcolor
 \end{table}
 
 % ============================================================
-% 7  CHALLENGES
+% 7  CHALLENGES + CONTRIBUTION (combined to save space)
 % ============================================================
-\section{Challenges Faced}
+\section{Challenges and Contribution to Design Concept}
 
-\begin{enumerate}
-    \item \textbf{Motor stalling:} DC + H-Bridge failed under load (\href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{video}}). Required full 3-iteration drivetrain redesign.
-    \item \textbf{Power brownouts:} Shared rail caused Pico resets. Rewired with isolated rails + screw-terminal blocks.
-    \item \textbf{3D print tolerances:} FDM teardrop on axles (Fig.~\ref{fig:v1axle}). Sanded, then redesigned with thicker geometry.
-    \item \textbf{Belt grip:} Smooth TPU slipped; hot glue failed on TPU. Redesigned belt with grip indents (Fig.~\ref{fig:v2belt}).
-    \item \textbf{Mechanical deadzones:} Switches take ${\sim}$2\,cm/end. Nozzle overhang compensates.
-    \item \textbf{A4988 thermal shutdown:} $V_{REF}$ tuned to 50\% to balance torque vs.\ heat.
-\end{enumerate}
+Key challenges: (1) Motor stalling/jitter forced a full 3-iteration drivetrain redesign (\href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{video}}). (2) Power brownouts required isolated 5\,V/12\,V rails. (3) FDM teardrop artifacts on V1 axles (Fig.\,\ref{fig:v1axle}) and belt slippage (Fig.\,\ref{fig:v2belt}) required two complete mechanical redesign cycles. (4) A4988 thermal shutdown, resolved by $V_{REF}$ tuning. (5) Limit-switch deadzones compensated by nozzle overhang.
 
-% ============================================================
-% 8  CONTRIBUTION
-% ============================================================
-\section{Contribution to Design Concept Understanding}
+The prototype verified two core hypotheses. \textbf{First}, automated linear translation is feasible: the stepper-driven belt system traverses reliably with mm-precision across 120\,s+ of continuous operation. \textbf{Second}, a planar air blade outperforms a circular nozzle: the three-test chain (Force $\rightarrow$ Angle $\rightarrow$ Wet Stiction) proved that the custom slit nozzle's shear-layer mechanism clears worst-case adhered wet debris where the circular nozzle fails entirely.
 
-\textbf{(1) Automated translation works.} The stepper-driven belt system traverses reliably with mm-precision and survives 120\,s+ of continuous operation. A motor-driven ridge carriage is viable.
-
-\textbf{(2) Planar air blade outperforms circular.} The verification chain (Force $\rightarrow$ Angle $\rightarrow$ Wet Stiction) proved the slit nozzle's shear-layer mechanism clears adhered wet debris where the circular nozzle fails.
-
-\textbf{Next phase:} Stepper + isolated power (not DC); planar slit at ${\sim}30^\circ$ (Coanda); nozzle within 12\,cm of surface; compressor selection to replace Dyson abstraction.
+Next phase: stepper + isolated power (not DC); planar slit at 30$^\circ$ (Coanda); nozzle within 12\,cm; compressor selection to replace the Dyson abstraction.
 
 \end{document}
