@@ -1,0 +1,91 @@
+% ============================================================
+% DEBRIS MODEL JUSTIFICATION — Team 0109D — 04.4_Verification
+% ============================================================
+\documentclass[12pt, letterpaper]{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=1]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{8pt}{3pt}
+\setlist{nosep, leftmargin=1.2em, itemsep=2pt}
+\hypersetup{colorlinks=true, urlcolor=blue!60!black}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+{\Large\textbf{Debris Analogue Selection Justification}}\\[2pt]
+{\normalsize Team 0109D \quad$\vert$\quad ESC204 --- Praxis III \quad$\vert$\quad Winter 2026}
+\end{center}
+\noindent\rule{\textwidth}{0.6pt}\vspace{6pt}
+
+\section{Problem Statement}
+
+The prototype must verify that the air blade can dislodge \textit{wet, adhered organic debris} from a surface that replicates asphalt shingles. Real autumn leaves at full scale do not behave identically on a 35\,cm mock-up, so the debris model must replicate the two critical failure modes that make roof debris difficult to clear pneumatically:
+
+\begin{enumerate}
+    \item \textbf{High stiction when wet.} Wet leaves adhere to shingles via surface tension and capillary forces at the debris--surface interface. The analogue must replicate this water-film bonding against a rough substrate.
+    \item \textbf{Low aerodynamic profile when saturated.} Wet leaves flatten against the roof, eliminating protruding edges that airflow can ``grab.'' The analogue must become flat and featureless when wet.
+\end{enumerate}
+
+\section{Selected Analogue: Disaggregated Tissue Paper on 40-Grit Sandpaper}
+
+\subsection*{Surface Substrate: 40-Grit Aluminum Oxide Sandpaper}
+
+Standard 40-grit aluminum oxide sandpaper has a mean surface roughness on the order of $R_a \approx 400$--$500\,\mu$m. This is comparable to the granule size and surface profile of asphalt roofing shingles, which use embedded mineral granules (typically 0.5--1.5\,mm) to create a rough, high-friction surface. The sandpaper replicates the coefficient of static friction that governs debris adhesion on a real roof.
+
+\subsection*{Debris Model: Disaggregated Tissue Paper}
+
+Tissue paper was disaggregated (separated into individual thin layers and small pieces) and placed across the 15\,cm-wide mock-up surface. This model was tested in two states:
+
+\begin{itemize}
+    \item \textbf{Dry state:} Light, low-mass fragments that are easily displaced. This baseline confirms that the air source produces sufficient force magnitude for loose debris---analogous to dry leaves in autumn.
+    \item \textbf{Saturated (wet) state:} Tissue paper soaked in water and pressed onto the 40-grit surface. In this state, the tissue exhibits:
+    \begin{itemize}
+        \item \textbf{Zero structural rigidity}---it conforms perfectly to every grain of the sandpaper, maximizing the real contact area and capillary bonding.
+        \item \textbf{Near-zero aerodynamic profile}---the saturated tissue lies completely flat with no protruding edges, eliminating any surface for impact drag to act on.
+        \item \textbf{Maximum surface-tension adhesion}---the water film between tissue and sandpaper creates the same capillary stiction mechanism as rainwater between a wet leaf and an asphalt shingle.
+    \end{itemize}
+\end{itemize}
+
+\section{Why This Is a Conservative (Worst-Case) Test}
+
+Saturated tissue paper on 40-grit sandpaper is \textbf{harder to clear than real wet leaves on real shingles} for the following reasons:
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Property} & \textbf{Real Wet Leaf} & \textbf{Saturated Tissue on 40-Grit} \\
+\midrule
+Structural rigidity & Some (veins, stem) & Zero (conforms to every grain) \\
+Contact area fraction & Partial (leaf curvature) & Near-total (flat, flexible) \\
+Aerodynamic profile & Low but nonzero & Effectively zero \\
+Edge availability for air & Some edges lift & No edges available \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Conclusion:} If the Custom Air Blade can peel saturated tissue paper off 40-grit sandpaper at $d = 50$\,cm, it will clear real wet leaves off real asphalt shingles under equivalent or easier conditions. The tissue paper model constitutes a deliberately conservative stress test that bounds the worst-case operational scenario.
+
+\section{Test Results Summary}
+
+At $d = 50$\,cm on saturated tissue / 40-grit sandpaper:
+\begin{itemize}
+    \item \textbf{Circular Nozzle:} \textcolor{red}{\textbf{FAILED.}} The high-pressure column pinned the flat, wet tissue against the surface. \href{https://drive.google.com/file/d/1wO-Wh8iFGygEvBvc3OOH91XQSwhoY_Ws/view}{\textit{[Video]}}
+    \item \textbf{Custom Air Blade:} \textcolor{green!50!black}{\textbf{PASSED.}} The planar shear layer penetrated beneath the water--sandpaper interface and peeled the debris. \href{https://drive.google.com/file/d/16htpF3ptwKEM5UxYE679x3f3xWmt80h1/view}{\textit{[Video]}}
+\end{itemize}
+
+This validates that the Custom Air Blade's Coanda-effect shear mechanism overcomes worst-case stiction, confirming Specifications O-1.1-STRU-1 and O-1.1-STRU-2.
+
+\end{document}
