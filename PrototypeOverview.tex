@@ -74,7 +74,7 @@
 % ============================================================
 \section{Introduction}
 
-This document presents the as-built prototype, its architecture, the iterative design process, key design decisions with empirical justification, verification results against the specification, and challenges faced. References to supporting artifacts in the Design Dossier (\texttt{04.1}--\texttt{04.4}) are provided throughout.
+This document presents the as-built prototype, its architecture, the iterative design process, key design decisions with empirical justification, verification results against the specification, and challenges faced. The prototype was developed collaboratively: Memo led fluid dynamics testing and data analysis; Markiyan designed the CircuitPython firmware and stepper logic; Kimmy developed the specification matrix and managed subsystem verification; Rihanna led CAD design, the engineering notebook, and 3D print submissions; Hannah coordinated test setup and procurement; and Karys contributed CAD, report writing, and verification protocols. References to supporting artifacts in the Design Dossier (\texttt{04.1}--\texttt{04.4}) are provided throughout.
 
 % ============================================================
 % 2  SYSTEM DESCRIPTION
@@ -128,18 +128,18 @@ Table~\ref{tab:arch} traces each concept element to its prototype realization.
 \multicolumn{3}{@{}l}{\textit{\textbf{Electrical Subsystem}}} \\
 Power Supply        & Dual-rail: 5\,V USB (logic) + 12\,V DC adapter (motor) & Prevents brownouts (\S\ref{sec:power}) \\
 Drive Motor         & Nema~17 stepper + A4988 driver                        & 200 steps/rev, 0.2\,mm/step \\
-Sensors             & 2$\times$ Omron limit switches (NO, pull-up)           & GP5 \& GP6 on Pico \\
+Sensors             & 2$\times$ D2FS-FL-N limit switches (NO, pull-up)       & GP15 \& GP16 on Pico \\
 Air Source          & Dyson hairdryer (continuous, high-CFM)                 & Abstracts final compressor \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{\textbf{Mechanical Subsystem}}} \\
 Ridge Track         & 60\,cm aluminum T-slot extrusion                       & Rigid, low-profile \\
 Drive System        & GT2 belt + 20-tooth 3D-printed pulleys                 & 40\,mm/rev linear travel \\
-Nozzle Carriage     & Custom cart with dual-nozzle mount                     & Affixed to belt \\
+Nozzle Carriage     & Custom cart with dual-sided nozzle mount (bidirectional clearing) & Affixed to belt \\
 \midrule
 \multicolumn{3}{@{}l}{\textit{\textbf{Software Subsystem}}} \\
 Controller          & Raspberry Pi Pico (CircuitPython)                      & Reactive state machine \\
 Direction Control   & Limit-switch polling $\rightarrow$ instant DIR reversal & Eliminates dead reckoning \\
-Safety              & Motor enable/disable; homing routine                   & \texttt{code.py} in \texttt{04.2\_Build} \\
+Safety              & Motor enable/disable; 4-cycle auto-stop                 & \texttt{PraxisCode.py} in \texttt{04.2\_Build} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -215,7 +215,7 @@ TPU Belt & Smooth surface $\rightarrow$ slipped on pulleys (hot glue failed) & C
 
 \subsection{Firmware: Delays $\rightarrow$ Reactive State Machine}
 
-CircuitPython logic upgraded from \texttt{time.sleep()} delays to reactive polling. When a limit switch (GP5/GP6, pull-up) is driven LOW, the DIR pin reverses \textit{instantly}---the carriage cannot overrun the track. Source: \texttt{firmware/code.py}.
+CircuitPython logic uses reactive polling of limit switches (GP15/GP16, internal pull-up). When a switch is driven LOW, the DIR pin (GP2) reverses immediately. A cycle counter auto-stops the motor after two complete round-trips (4 switch events), and a dual-button reset allows restarting. Source: \texttt{PraxisCode.py} in \texttt{04.2\_Build/Software}.
 
 % ============================================================
 % 5  PROTOTYPE DESIGN PROCESS
@@ -232,7 +232,7 @@ Six key changes bridged individually-functional subsystems into a working integr
     \item \textbf{Driver Architecture:} L298N H-Bridge $\rightarrow$ A4988 stepper driver + screw-terminal power blocks.
     \item \textbf{Power Segregation:} Single rail $\rightarrow$ isolated 5\,V logic / 12\,V motor (\S\ref{sec:power}).
     \item \textbf{Thermal Tuning:} $V_{REF}$ calibrated to 50\% to balance torque vs.\ thermal limits.
-    \item \textbf{Firmware Upgrade:} Time-based delays $\rightarrow$ reactive limit-switch state machine.
+    \item \textbf{Firmware Upgrade:} Time-based delays $\rightarrow$ reactive limit-switch polling with 4-cycle auto-stop.
     \item \textbf{Deadzone Compensation:} Limit switches occupy ${\sim}$2\,cm per end; nozzle overhangs 2\,cm on each side of mount $\rightarrow$ 100\% surface coverage despite mechanical limits.
 \end{enumerate}
 
@@ -245,7 +245,7 @@ All protocols and raw data are in \texttt{04.4\_Verification}.
 \label{sec:test1}
 
 A Dyson hairdryer (max setting) was directed at a digital scale with a rigid 14$\times$14\,cm target.
-Force was measured at four distances across four nozzle geometries.
+Force was measured at four distances across three nozzle geometries.
 
 \vspace{-2pt}
 \begin{table}[H]
@@ -259,7 +259,6 @@ Force was measured at four distances across four nozzle geometries.
 Pure Dyson (Baseline)    & 1.96 & 1.95 & 1.95 & 1.76 \\
 Dyson OEM Air Blade      & 1.98 & 1.97 & 1.95 & 1.78 \\
 Custom Air Blade (Ours)  & 1.96 & 1.95 & 1.93 & 1.72 \\
-Double-Sided Air Blade   & 1.91 & 1.88 & 1.85 & 1.62 \\
 \bottomrule
 \end{tabular}
 \end{table}
