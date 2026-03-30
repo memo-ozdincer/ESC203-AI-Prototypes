@@ -1,0 +1,63 @@
+﻿Prototype Overview | Team 0109D
+1 Introduction
+This document presents a high-level description of the developed prototype, its system architecture and functional behaviour, the key design decisions, the structure of the prototype design process used to iterate to the final design, the performance of the prototype in accordance to the specifications and NGOs, and challenges faced in the process.
+2 High-Level Prototype System Description
+The developed prototype is an automated, motor-driven ridge track system with an attached dual-nozzle air carriage. Its primary function is to investigate and verify the clearing mechanism of our final Design Concept. By traversing a 60cm aluminum track along the ridge of a sloped roof mock-up, the system delivers a continuous, high-velocity planar shear layer (air blade) to dislodge and clear wet debris without causing damage to the shingles.
+
+
+The prototype consists of two systems, one to control translation and one to clear the debris. The translation system uses a Nema 17 stepper motor, driven by an A4988 motor controller to move the carriage across the roof. The logic is handled by a Raspberry Pi Pico executing CircuitPython and uses limit switches for automated direction reversal and stopping. The clearing air blade system uses a continuous high-volume air source (Dyson hair-dryer used during testing) through a converging slit nozzle to convert the air flow into a high-velocity planar shear layer.
+3 System Architecture
+To ensure coherence across the design chain, the system architecture of the automated, motor-driven ridge track system with an attached dual-nozzle air carriage maps directly to the three primary subsystems proposed in our Phase 2 Design Concept: Electrical, Mechanical, and Software. 
+
+
+Subsystem Interactions:
+Electrical Subsystem
+Power Supply & Distribution
+Drive Motor & Motor Driver
+Sensor Inputs 
+Air Compressor / Blower Unit
+	Mechanical Subsystem
+Ridge Track Assembly
+Cable-Pull Drive
+Dual-Nozzle Carriage
+Air Delivery Path
+	Software Subsystem
+Microcontroller
+Direction & Power Control
+Safety Logic
+Scheduling & Automation
+
+
+	  3.1 Electrical
+Power Supply & Distribution: Our final concept requires unified power distribution. In the prototype, we isolated the logic power (5V USB to Pico/3.3V logic) from the motor power (12V DC wall adapter to VMOT) to prevent logic brownouts.
+Drive Motor & Motor Driver: We successfully implemented a Nema 17 Stepper motor and an A4988 driver to translate the system across the roof ridge as required by the concept.
+Sensor Inputs: We integrated hardware limit switches on both ends of the track to control the direction of movement and power state of the system.
+Air Compressor / Blower Unit: The actual Air Compressor was abstracted to a continuous high-volume blower (Dyson hairdryer) for this phase to focus testing on nozzle fluid dynamics rather than pump mechanics.
+3.2 Mechanical
+Ridge Track Assembly & Carriage: We designed a functional 60 cm rigid track made of aluminum t-slots and a custom fabricated timing belt. The physical nozzle cart was implemented to verify that a moving mass could stably traverse the distance of the track.
+Cable-Pull Drive: 
+Dual-Nozzle Carriage & Air Delivery Path: We fabricated and tested our custom narrow planar slit (air blade) to verify that it created the necessary power to remove debris without the need for physical contact. 
+3.3 Software
+Microcontroller: The prototype implements a Raspberry Pi Pico to control
+Direction and Power Control: The code monitors the limit switch inputs (pull-up resistors) and controls direction reversals (DIR pin) when the end switches are triggered.
+Safety Logic: 
+Scheduling & Automation: This aspect of the design concept was abstracted for this prototype, as our primary focus was verifying the physical feasibility of the Direction and Power Control.
+4 Key Design Decisions
+Thicker pulley system axles to endure higher tension
+DC motor to stepper motor
+Power Delivery (Batteries vs. Wall Power)
+Logic Segregation to prevent brownouts
+
+
+5 Prototype Design Process: This section describes the process taken to design the final prototype system.
+5.1 Design
+Our initial design concept was a
+5.2 Build
+5.3 Integrate
+5.4 Verification
+
+
+6 Challenges Faced
+
+
+7 Specifications and Performance relative to Need, Goals, and Objectives from Phase 2

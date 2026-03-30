@@ -1,0 +1,16 @@
+Test 2 and 3 results:
+We set up for 30 degree roof, we did three different distances.
+Setup: We had the dyson without the nozzle attachment, and we had the dyston with the nozzle attachment, and we put a 30 degree roof with shingles (very grippy sandpaper, specify the grade or whatever i don't remember), and we did three different distances, 10cm from the start of the roof, 25 cm from the start of the roof and 50cm from the start of the roof. The roof itself is 35cm long and 15 cm wide, it's just cardboard, and sandpaper attached to it. What we did essentially is have markings of angle on a frame that were carefully measured by a protractor and a ruler to measure the distances.  The nozzle-less dyson was very carefully made so that it points exactly at 30 degrees by lining it up perfectly with the nozzle which was always right next to it, and there was another person who was lined up axially who could tell that difference very finely. Air blade is called airblade, dyson tip-less is called circular. Then finally, we wet the paper towels quite a bit, and did the furthest distance test one more time.
+
+Results showed a lot of stuff (you can elaborate as much as you want, the extreme specifics aren't very important, in fact, I would really appreciate if you could add some specifics and some numbers, etc. to make it more rigorous). 
+
+The results:
+- On close, there wasn't a huge difference
+- For medium both blew them pretty well but the air nozzle clearly blew them much higher and much furtther, this is clearly better for clearing and we hypothesize (hopefully backed up by the simulations and the visualizations etc.) that this is because the air got under the tissues better
+- on far examples, nozzle always had wider coverage, while circular always left way more cut up toilet paper on the edges. Furthermore they were once again clealy blown much further than the circular.
+- On wet examples, there was a huge difference, the air nozzle as always sent them flying, and the circular was much much worse, in fact, it barely moved a lot of them, only getting a few in the center. The hypothesis here is that the wetness made there be way less things to for the air to grab onto, but this wasn't an issue for the air nozzle since it got under the paper tissues.
+
+We only recorded one set of trials, but we actually had three sets of trials for each, and the results were so similar,
+The close
+
+Rihanna will elaborate but the air blade was made for a 30 degree angle she made in solidworks because it was justified by some calculations that she will elaborate on 

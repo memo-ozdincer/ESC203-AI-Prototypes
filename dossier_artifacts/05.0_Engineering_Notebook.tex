@@ -1,0 +1,265 @@
+% ============================================================
+% ENGINEERING NOTEBOOK — Team 0109D — ESC204 Winter 2026
+% Compile with: pdflatex 05.0_Engineering_Notebook.tex (x2 for refs)
+% ============================================================
+\documentclass[12pt, letterpaper]{article}
+
+% --- Page Geometry (0.5" margins, rubric minimum) ---
+\usepackage[margin=0.5in, headheight=14.5pt]{geometry}
+
+% --- Helvetica Font ---
+\usepackage[T1]{fontenc}
+\usepackage[scaled=1]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Core Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% --- Colours ---
+\definecolor{dateblue}{HTML}{1A3C6E}
+\definecolor{rulegray}{HTML}{999999}
+
+% --- Section Formatting (entry headers) ---
+\titleformat{\section}{\normalsize\bfseries\color{dateblue}}{}{0em}{}[\vspace{-4pt}\textcolor{rulegray}{\rule{\linewidth}{0.4pt}}]
+\titlespacing*{\section}{0pt}{7pt}{2pt}
+
+% --- Compact Lists ---
+\setlist{nosep, leftmargin=1.2em, itemsep=0.5pt, parsep=0pt, topsep=1pt}
+
+% --- Header / Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\lhead{\small\textbf{Engineering Notebook} --- Team 0109D}
+\rhead{\small ESC204 Phase 3 --- Winter 2026}
+\cfoot{\small Page \thepage\ of \pageref{LastPage}}
+
+% --- Paragraph Spacing ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.5pt}
+
+% --- Hyperlink Setup ---
+\hypersetup{colorlinks=true, linkcolor=dateblue, urlcolor=dateblue}
+
+% --- Custom Command for Entry Headers ---
+\newcommand{\logentry}[2]{%
+  \section{#1}%
+  \textit{Present:} #2\par\vspace{1pt}%
+}
+
+% --- Custom Command for Artifacts Sub-list ---
+\newcommand{\artifacts}{\par\vspace{1pt}\textbf{Artifacts Created:}\vspace{0pt}}
+
+% ============================================================
+\begin{document}
+
+% --- Title Block ---
+\begin{center}
+  {\LARGE\bfseries Engineering Notebook}\\[2pt]
+  {\large Phase 3 Work Log --- Team 0109D}\\[1pt]
+  {\normalsize ESC204 --- Winter 2026 \quad|\quad Compiled \today}
+\end{center}
+\vspace{2pt}
+\textcolor{rulegray}{\rule{\linewidth}{0.8pt}}
+\vspace{2pt}
+
+% ============================================================
+% ENTRY 1
+% ============================================================
+\logentry{Entry 1 \textnormal{---} Mar 2--6, 2026 \textnormal{---} Prototype System Design}{Full team (Memooz, Angela, Liam, Priya, Jaden)}
+
+\begin{itemize}
+  \item Reviewed Phase 2 Design Concept and mapped each subsystem (Electrical, Mechanical, Software) to prototype scope. Identified which subsystems would be physically built vs.\ abstracted.
+  \item \textbf{Key decision:} Abstract rooftop air compressor to Dyson hairdryer for testing --- focus verification on track mechanism + air blade fluid dynamics rather than pump procurement.
+  \item Developed initial Specification spreadsheet: 11 elements across Electrical (4), Structural (4), Software (3). Each includes target value, tolerance, measurement method, and pass/fail criterion.
+  \item Created first wiring diagram for DC motor + breadboard circuit (Iteration 1): 9V battery $\rightarrow$ breadboard rails $\rightarrow$ DC motor with toggle switch.
+  \item Agreed on 60\,cm aluminum T-slot extrusion as track rail.
+\end{itemize}
+
+\artifacts
+\begin{itemize}
+  \item Specification spreadsheet v1 (Google Sheets, shared to team drive)
+  \item Wiring diagram --- Iteration 1 (hand-drawn, photographed)
+  \item Phase 2 $\rightarrow$ Phase 3 subsystem mapping table
+\end{itemize}
+
+% ============================================================
+% ENTRY 2
+% ============================================================
+\logentry{Entry 2 \textnormal{---} Mar 9--13, 2026 \textnormal{---} Subsystem Fabrication Begins}{Split teams (Mechanical / Electrical / Software)}
+
+\textbf{Mechanical team:}
+\begin{itemize}
+  \item Submitted CAD files to MYFab: pulley axles ($\times 2$), mounting brackets ($\times 4$), TPU timing belt (V1, 60\,cm loop, 6\,mm width).
+  \item Received aluminum T-slot track (60\,cm) from MYFab. Verified dimensional fit with CAD --- no shimming required.
+\end{itemize}
+
+\textbf{Electrical team:}
+\begin{itemize}
+  \item Assembled DC motor + breadboard + 9V battery circuit (Iteration 1). Motor spun freely under no load.
+  \item \textbf{Critical finding:} DC motor cannot perform dead reckoning --- no positional accuracy or repeatable step count. Speed drifts under varying load, making automated reversal unreliable.
+  \item \textbf{Decision:} Pivot to stepper motor for deterministic positional control via discrete stepping.
+\end{itemize}
+
+\textbf{Software team:}
+\begin{itemize}
+  \item Began CircuitPython firmware for Raspberry Pi Pico. Initial version used \texttt{time.sleep()} delays --- functional but not responsive to real-time input.
+  \item Established GPIO pin assignment table (shared on team drive).
+\end{itemize}
+
+\artifacts
+\begin{itemize}
+  \item CAD files submitted to MYFab (pulley axles, brackets, belt V1)
+  \item Iteration 1 circuit photo (breadboard + DC motor)
+  \item GPIO pin assignment table
+\end{itemize}
+
+% ============================================================
+% ENTRY 3
+% ============================================================
+\logentry{Entry 3 \textnormal{---} Mar 16--17, 2026 \textnormal{---} Subsystem Check-In Week}{Full team}
+
+\textbf{Mechanical issues (V1 print results):}
+\begin{itemize}
+  \item V1 pulley axles printed in teardrop cross-section (FDM overhang artifact). Required sanding for roundness.
+  \item Axles bent under belt tension ($\sim$1\,mm deflection at midpoint) --- wall thickness insufficient.
+  \item Belt too smooth --- slipped on pulleys. No positive engagement.
+  \item \textbf{Requested V2:} Thicker axles ($1.5 \rightarrow 2.5\,\text{mm}$ wall), triangle gusset brackets, indented (toothed) TPU belt.
+\end{itemize}
+
+\textbf{Electrical issues (Iteration 2):}
+\begin{itemize}
+  \item Attempted L298N H-Bridge with DC motor (Iteration 2). Severe voltage drops ($\sim$2.1\,V across driver) caused stalling and jitter under carriage load. Video recorded for dossier.
+  \item \textbf{Decision:} Abandon DC motor path. Switch to Nema 17 stepper + A4988 driver (microstepping, current limiting, deterministic rotation).
+\end{itemize}
+
+\textbf{Action items:}
+\begin{itemize}
+  \item Order from MYFab: A4988 stepper driver ($\times 1$), Nema 17 stepper motor ($\times 1$), screw terminal blocks ($\times 4$), 12V 2A DC wall adapter ($\times 1$).
+  \item Submit V2 mechanical print files to MYFab.
+\end{itemize}
+
+\artifacts
+\begin{itemize}
+  \item V1 failure photos (teardrop axles, belt slippage)
+  \item L298N jitter video (Iteration 2 failure documentation)
+  \item V2 CAD files submitted to MYFab
+\end{itemize}
+
+% ============================================================
+% ENTRY 4
+% ============================================================
+\logentry{Entry 4 \textnormal{---} Mar 19--20, 2026 \textnormal{---} Electrical Redesign \& V2 Mechanical}{Split teams (Electrical / Mechanical / Software)}
+
+\textbf{Electrical redesign (Iteration 3 --- final):}
+\begin{itemize}
+  \item Received A4988 stepper driver and Nema 17 motor from MYFab.
+  \item Assembled final architecture: Nema 17 $\rightarrow$ A4988 $\rightarrow$ screw terminals $\rightarrow$ isolated rails (5\,V USB for Pico logic, 12\,V adapter for VMOT).
+  \item \textbf{Issue:} A4988 overheating during continuous operation ($>$60\,s). Driver IC reached $\sim$85\,$^\circ$C.
+  \item \textbf{Resolution:} Tuned VREF potentiometer to $\sim$50\%, reducing current to $\sim$0.8\,A/phase. Temperature stabilized at $\sim$52\,$^\circ$C --- within safe range.
+\end{itemize}
+
+\textbf{V2 Mechanical components:}
+\begin{itemize}
+  \item V2 pulley axles received: thicker walls eliminated deflection under belt tension.
+  \item Triangle gusset brackets hold the axle mounts rigidly to the T-slot track end caps.
+  \item Indented TPU belt (V2) grips the pulley teeth with zero observable slippage during manual pull tests.
+\end{itemize}
+
+\textbf{Software update:}
+\begin{itemize}
+  \item Firmware updated to support the A4988 STEP/DIR interface (GP2 = STEP, GP3 = DIR).
+  \item Added limit switch inputs on GP5/GP6 with internal pull-up resistors (\texttt{digitalio.Pull.UP}).
+  \item Preliminary logic: poll limit switches in main loop; on trigger, reverse DIR pin and continue stepping.
+\end{itemize}
+
+\artifacts
+\begin{itemize}
+  \item Final wiring diagram --- Iteration 3 (digital, Fritzing)
+  \item A4988 VREF tuning notes and thermal measurements
+  \item V2 mechanical assembly photos
+  \item Updated firmware (\texttt{code.py} v0.3)
+\end{itemize}
+
+% ============================================================
+% ENTRY 5
+% ============================================================
+\logentry{Entry 5 \textnormal{---} Mar 23--25, 2026 \textnormal{---} Systems Integration}{Full team}
+
+\begin{itemize}
+  \item Integrated all subsystems onto the track: V2 belt/pulleys, Nema 17 + A4988 + Pico, and nozzle carriage.
+  \item \textbf{Deadzone issue:} Limit switches occupy $\sim$2\,cm per track end. \textbf{Fix:} Extended nozzle mount to overhang 2\,cm past carriage on each side, ensuring full 60\,cm coverage.
+  \item \textbf{Firmware upgrade:} Replaced delay-based polling with a reactive state machine (FORWARD / REVERSE / STOPPED). Limit switch interrupts now trigger instant DIR reversal, eliminating $\sim$50\,ms latency.
+  \item \textbf{First full-pass test:} Carriage traversed entire track (fwd + rev) with zero stalling, slippage, or errors.
+  \item \textbf{Endurance test (2\,min continuous):} PASSED --- zero stalls, belt held tension, A4988 at $\sim$50\,$^\circ$C, no Pico resets.
+\end{itemize}
+
+\artifacts
+\begin{itemize}
+  \item Full integration photo (all subsystems on track)
+  \item Endurance test video (2\,min continuous operation)
+  \item Updated firmware (\texttt{code.py} v1.0 --- state machine)
+  \item Integration test checklist (pass/fail for each subsystem)
+\end{itemize}
+
+% ============================================================
+% ENTRY 6
+% ============================================================
+\logentry{Entry 6 \textnormal{---} Mar 26--28, 2026 \textnormal{---} Verification Testing}{Full team}
+
+Three formal verification tests conducted per the Verification Protocol:
+
+\textbf{Test 1 --- Force Output:} Measured force at 4/8/12/16\,cm across four nozzle geometries. \textbf{Finding:} $\sim$1.96\,N conserved across all geometries; nozzle shape redistributes force spatially but total magnitude is unchanged.
+
+\textbf{Test 2 --- Distance/Angle:} Circular vs.\ air blade at 10/25/50\,cm on 30$^\circ$ 40-grit sandpaper. Air blade superior at 25\,cm+: planar shear layer maintains momentum while circular jet disperses. Comparable at 10\,cm.
+
+\textbf{Test 3 --- Wet Stiction:} Saturated tissue on 40-grit sandpaper at 50\,cm. Circular: \textbf{FAILED} (pinned debris). Air blade: \textbf{PASSED} (peeled debris progressively, cleared in 3 passes). Videos recorded.
+
+\begin{itemize}
+  \item Compiled all data into Verification Protocol \& Results spreadsheet. Began Prototype Overview draft.
+\end{itemize}
+
+\artifacts
+\begin{itemize}
+  \item Verification Protocol \& Results spreadsheet (Google Sheets)
+  \item Test 1 force data (CSV export)
+  \item Test 2/3 photos and videos
+  \item Prototype Overview draft (v0.1)
+\end{itemize}
+
+% ============================================================
+% ENTRY 7
+% ============================================================
+\logentry{Entry 7 \textnormal{---} Mar 29, 2026 \textnormal{---} Final Assembly \& Documentation}{Full team}
+
+\begin{itemize}
+  \item Final review of all artifacts. Verified every specification element has a test result and pass/fail status.
+  \item Compiled Prototype Overview (5 pages): system description, architecture, design decisions, iteration history, verification results, reflections.
+  \item Organized Design Dossier folder: \texttt{01.0}~Prototype Overview, \texttt{02.0}~Specifications \& NGOs, \texttt{03.0}~Verification Protocol \& Results, \texttt{04.0}~Photos \& Videos, \texttt{05.0}~Engineering Notebook, \texttt{06.0}~Supporting Documents.
+  \item Verified all video links accessible (Google Drive, shared with instructor). Final proofread completed.
+\end{itemize}
+
+\artifacts
+\begin{itemize}
+  \item Prototype Overview --- final version (PDF, 5 pages)
+  \item Design Dossier folder (complete, organized)
+  \item Video link index (Google Sheets, all links verified accessible)
+\end{itemize}
+
+\vfill
+\begin{center}
+  \textcolor{rulegray}{\rule{0.5\linewidth}{0.4pt}}\\[4pt]
+  {\small\textit{End of Engineering Notebook --- Phase 3 Work Log}}
+\end{center}
+
+\end{document}

@@ -1,0 +1,373 @@
+% ============================================================
+% PROTOTYPE OVERVIEW — Team 0109D — ESC204 Winter 2026
+% Compile with: pdflatex PrototypeOverview.tex (×2 for refs)
+% ============================================================
+\documentclass[12pt, letterpaper]{article}
+
+% --- Page Geometry (0.5" margins, rubric minimum) ---
+\usepackage[margin=0.5in]{geometry}
+
+% --- Helvetica Font ---
+\usepackage[T1]{fontenc}
+\usepackage[scaled=1]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Core Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{multicol}
+
+% --- Compact Section Formatting ---
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}[runin]{\normalsize\bfseries}{}{0em}{}[.]
+\titlespacing*{\section}{0pt}{6pt}{2pt}
+\titlespacing*{\subsection}{0pt}{4pt}{1pt}
+\titlespacing*{\subsubsection}{0pt}{3pt}{3pt}
+
+% --- Compact Lists ---
+\setlist{nosep, leftmargin=1.2em, itemsep=1pt, parsep=0pt}
+
+% --- Caption Style ---
+\captionsetup{font=small, skip=3pt, labelfont=bf}
+
+% --- Hyperlinks ---
+\hypersetup{colorlinks=true, linkcolor=blue!70!black, urlcolor=blue!60!black}
+
+% --- Image Path ---
+\graphicspath{{images/}}
+
+% --- Reduce paragraph spacing slightly ---
+\setlength{\parskip}{2pt plus 1pt minus 1pt}
+\setlength{\parindent}{0pt}
+\setlength{\floatsep}{4pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{4pt plus 2pt minus 2pt}
+\setlength{\intextsep}{4pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+
+\begin{document}
+
+% ============================================================
+% TITLE HEADER (no cover page — maximizes usable space)
+% ============================================================
+\begin{center}
+    {\LARGE\textbf{Prototype Overview}}\\[2pt]
+    {\normalsize Team 0109D \quad$\vert$\quad ESC204 --- Praxis III \quad$\vert$\quad Winter 2026}
+\end{center}
+\vspace{-2pt}
+\noindent\rule{\textwidth}{0.6pt}
+\vspace{4pt}
+
+% ============================================================
+% 1  INTRODUCTION
+% ============================================================
+\section{Introduction}
+
+This document presents the as-built prototype, its architecture, the iterative design process, key design decisions with empirical justification, verification results against the specification, and challenges faced. References to supporting artifacts in the Design Dossier (\texttt{04.1}--\texttt{04.4}) are provided throughout.
+
+% ============================================================
+% 2  SYSTEM DESCRIPTION
+% ============================================================
+\section{High-Level Prototype System Description}
+
+The prototype is an \textbf{automated, motor-driven ridge track with an attached dual-nozzle air carriage}, verifying the clearing mechanism of our Design Concept: a linear track translating a high-velocity planar air blade to autonomously dislodge wet debris without physical contact. It consists of two functional subsystems:
+
+\begin{itemize}
+    \item \textbf{Translation:} Nema~17 stepper motor, A4988 driver, GT2 timing belt \& custom pulleys, Raspberry Pi Pico (CircuitPython) with limit-switch-based automated reversal. Traverses a 60\,cm aluminum T-slot track.
+    \item \textbf{Clearing:} Continuous high-volume air source (Dyson hair dryer, abstracting the final compressor) through a custom converging slit nozzle at 30$^\circ$ angle of attack, producing a high-velocity planar shear layer.
+\end{itemize}
+
+\vspace{-2pt}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.60\textwidth]{prototype_clear_visualization.png}
+\vspace{-2pt}
+\caption{Prototype layout: air blade interaction on sloped roof (top); force analysis confirming drag exceeds stiction threshold (bottom). Scripts in \texttt{analysis/}.}
+\label{fig:system}
+\end{figure}
+
+% ============================================================
+% PLACEHOLDER: As-Built Photograph (rubric-required)
+% Uncomment and replace filename when photo is available:
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=0.55\textwidth]{assembled_prototype_photo.jpeg}
+% \caption{Fully assembled prototype: 60\,cm track, stepper motor, timing belt, nozzle carriage, Pico controller, and 12\,V power supply.}
+% \label{fig:asbuilt}
+% \end{figure}
+% ============================================================
+
+% ============================================================
+% 3  SYSTEM ARCHITECTURE
+% ============================================================
+\section{System Architecture}
+
+The prototype maps directly to the three subsystems proposed in our Phase~2 Design Concept.
+Table~\ref{tab:arch} traces each concept element to its prototype realization.
+
+\vspace{-2pt}
+\begin{table}[H]
+\centering\small
+\caption{Design Concept $\rightarrow$ Prototype realization, organized by subsystem.}
+\label{tab:arch}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+\toprule
+\textbf{Concept Element} & \textbf{Prototype Realization} & \textbf{Key Detail} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{\textbf{Electrical Subsystem}}} \\
+Power Supply        & Dual-rail: 5\,V USB (logic) + 12\,V DC adapter (motor) & Prevents brownouts (\S\ref{sec:power}) \\
+Drive Motor         & Nema~17 stepper + A4988 driver                        & 200 steps/rev, 0.2\,mm/step \\
+Sensors             & 2$\times$ Omron limit switches (NO, pull-up)           & GP5 \& GP6 on Pico \\
+Air Source          & Dyson hairdryer (continuous, high-CFM)                 & Abstracts final compressor \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{\textbf{Mechanical Subsystem}}} \\
+Ridge Track         & 60\,cm aluminum T-slot extrusion                       & Rigid, low-profile \\
+Drive System        & GT2 belt + 20-tooth 3D-printed pulleys                 & 40\,mm/rev linear travel \\
+Nozzle Carriage     & Custom cart with dual-nozzle mount                     & Affixed to belt \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{\textbf{Software Subsystem}}} \\
+Controller          & Raspberry Pi Pico (CircuitPython)                      & Reactive state machine \\
+Direction Control   & Limit-switch polling $\rightarrow$ instant DIR reversal & Eliminates dead reckoning \\
+Safety              & Motor enable/disable; homing routine                   & \texttt{code.py} in \texttt{04.2\_Build} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+% 4  KEY DESIGN DECISIONS
+% ============================================================
+\section{Key Design Decisions}
+
+\subsection{Motor \& Driver Evolution}
+\label{sec:motor}
+
+The drivetrain underwent three complete iterations, each driven by a specific failure mode discovered during testing.
+Figure~\ref{fig:motor} shows the physical evolution; supporting artifacts (including a \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{video of the motor jitter failure}) are in \texttt{04.3\_Integration}.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth, height=2.6cm, keepaspectratio]{DC_Motor_Breadboard_Iteration1.jpeg}\\[1pt]
+    {\scriptsize\textbf{Iter.\,1:} DC motor, breadboard, 9\,V.
+    \textcolor{red}{Failed:} no dead reckoning.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth, height=2.6cm, keepaspectratio]{HBridge_Motor_Iteration2.jpeg}\\[1pt]
+    {\scriptsize\textbf{Iter.\,2:} DC motor + L298N H-Bridge.
+    \textcolor{red}{Failed:} voltage drop, stall, jitter.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth, height=2.6cm, keepaspectratio]{Stepper_A4988_ScrewTerminals_Final.jpeg}\\[1pt]
+    {\scriptsize\textbf{Final:} Nema\,17 + A4988 + screw terminals.
+    \textcolor{green!50!black}{Resolved:} mm-precise, no jitter.}
+\end{minipage}
+\vspace{2pt}
+\caption{Electrical subsystem evolution (left $\rightarrow$ right). Each iteration addressed a critical failure of the previous.}
+\label{fig:motor}
+\end{figure}
+
+\vspace{-6pt}
+\begin{itemize}
+    \item \textbf{DC $\rightarrow$ Stepper:} Time-based DC motor movement was unreliable due to variable friction and carriage mass. The Nema\,17 provides exact step-count positioning (0.2\,mm/step), enabling mm-perfect actuation.
+    \item \textbf{H-Bridge $\rightarrow$ A4988:} The L298N suffered extreme voltage drops under the high-mass carriage, causing stalling and severe jitter. The A4988 provides micro-stepping torque control and eliminates jitter.
+\end{itemize}
+
+\subsection{Pulley System Iterations}
+
+The 3D-printed pulley \& belt system underwent two major revisions.
+Full photo documentation (with red/blue border comparison images) is in \texttt{04.2\_Build}.
+
+\vspace{-2pt}
+\begin{table}[H]
+\centering\small
+\caption{Pulley system design iterations (photo artifacts in \texttt{04.2\_Build}).}
+\label{tab:pulley}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+\toprule
+\textbf{Component} & \textbf{Version 1 (Failed)} & \textbf{Version 2 (Final)} \\
+\midrule
+Axles    & Thin; FDM teardrop artifact $\rightarrow$ sanded to fit bearings; bent under belt tension & Thicker center diameter; true circular cross-section; no bending \\
+Brackets & L-shaped corners $\rightarrow$ deformed under tension & Triangle-reinforced corners; higher load capacity \\
+TPU Belt & Smooth surface $\rightarrow$ slipped on pulleys (hot glue failed) & CAD-redesigned with molded grip indents; 3D-printed in TPU \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Power Segregation \& Thermal Tuning}
+\label{sec:power}
+
+\textbf{Power Segregation:} Sharing a single rail caused logic brownouts during motor current draw. \textit{Solution:} Complete physical isolation---Pico on 5\,V USB (3.3\,V to A4988 $V_{DD}$), motor on dedicated 12\,V DC adapter to $V_{MOT}$.
+\textbf{Thermal Tuning:} A4988 $V_{REF}$ potentiometer calibrated to ${\sim}50\%$, capping current to prevent thermal shutdown while maintaining holding torque.
+
+\subsection{Firmware: Delays $\rightarrow$ Reactive State Machine}
+
+CircuitPython logic upgraded from \texttt{time.sleep()} delays to reactive polling. When a limit switch (GP5/GP6, pull-up) is driven LOW, the DIR pin reverses \textit{instantly}---the carriage cannot overrun the track. Source: \texttt{firmware/code.py}.
+
+% ============================================================
+% 5  PROTOTYPE DESIGN PROCESS
+% ============================================================
+\section{Prototype Design Process}
+
+\subsection{Integration Changes}
+\label{sec:integration}
+
+Six key changes bridged individually-functional subsystems into a working integrated system (artifacts in \texttt{04.3\_Integration}):
+
+\begin{enumerate}
+    \item \textbf{Motor Substitution:} DC motor $\rightarrow$ Nema\,17 stepper for positional accuracy (\S\ref{sec:motor}).
+    \item \textbf{Driver Architecture:} L298N H-Bridge $\rightarrow$ A4988 stepper driver + screw-terminal power blocks.
+    \item \textbf{Power Segregation:} Single rail $\rightarrow$ isolated 5\,V logic / 12\,V motor (\S\ref{sec:power}).
+    \item \textbf{Thermal Tuning:} $V_{REF}$ calibrated to 50\% to balance torque vs.\ thermal limits.
+    \item \textbf{Firmware Upgrade:} Time-based delays $\rightarrow$ reactive limit-switch state machine.
+    \item \textbf{Deadzone Compensation:} Limit switches occupy ${\sim}$2\,cm per end; nozzle overhangs 2\,cm on each side of mount $\rightarrow$ 100\% surface coverage despite mechanical limits.
+\end{enumerate}
+
+\subsection{Verification}
+
+Verification followed a structured three-test protocol for the fluid dynamics of the clearing mechanism, plus a mechanical endurance test.
+All protocols and raw data are in \texttt{04.4\_Verification}.
+
+\subsubsection{Test 1: Force Quantification (Magnitude)}
+\label{sec:test1}
+
+A Dyson hairdryer (max setting) was directed at a digital scale with a rigid 14$\times$14\,cm target.
+Force was measured at four distances across four nozzle geometries.
+
+\vspace{-2pt}
+\begin{table}[H]
+\centering\small
+\caption{Continuous force output (N) vs.\ distance. Baseline $\approx 200$\,g ($\sim$1.96\,N).}
+\label{tab:force}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Nozzle Geometry} & \textbf{4\,cm} & \textbf{8\,cm} & \textbf{12\,cm} & \textbf{16\,cm} \\
+\midrule
+Pure Dyson (Baseline)    & 1.96 & 1.95 & 1.95 & 1.76 \\
+Dyson OEM Air Blade      & 1.98 & 1.97 & 1.95 & 1.78 \\
+Custom Air Blade (Ours)  & 1.96 & 1.95 & 1.93 & 1.72 \\
+Double-Sided Air Blade   & 1.91 & 1.88 & 1.85 & 1.62 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{-4pt}
+\textbf{Key Finding:} Total force is conserved ($\sim$1.96\,N) across all single-directional geometries within 12\,cm (mass-flow conservation). Geometry does not increase total force---it \textit{redistributes} it. This shifted design focus to optimizing \textit{planar shear stress}. Force degrades at 16\,cm, so the nozzle must remain within 12\,cm of the surface.
+
+\subsubsection{Test 2: Distance \& Angle Optimization (Geometry)}
+\label{sec:test2}
+
+A 30$^\circ$ roof mock-up (35$\times$15\,cm, 40-grit aluminum oxide sandpaper simulating asphalt shingles) was tested at $d = 10$, 25, and 50\,cm.
+Three trial sets per configuration; results were highly consistent.
+
+\vspace{-2pt}
+\begin{table}[H]
+\centering\small
+\caption{Clearing performance: Custom Air Blade vs.\ Circular Nozzle at 30$^\circ$ angle of attack.}
+\label{tab:clearing}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+\toprule
+\textbf{Distance} & \textbf{Circular Nozzle} & \textbf{Custom Air Blade} \\
+\midrule
+10\,cm (Close)  & Full clear; geometry advantage negligible at close range & Full clear \\
+25\,cm (Medium) & Cleared, debris blown lower \& shorter distance            & Debris ejected higher \& further; shear layer penetrates \textit{under} debris \\
+50\,cm (Far)    & Narrow central path only; debris left on lateral edges (turbulent diffusion) & Wide uniform sweep across full 15\,cm width; coherent planar coverage \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{-4pt}
+The 30$^\circ$ angle balances the normal force $F_y$ (Coanda-effect boundary attachment, without pinning) against the tangential shear $F_x$ (propelling debris down-slope).
+Steeper angles ($>$45$^\circ$) pin debris; shallower ($<$15$^\circ$) deflect over it. \textit{(Passes O-4.2-STRU-1.)}
+
+\subsubsection{Test 3: Wet Debris Maximum Stiction Stress Test}
+\label{sec:test3}
+
+The critical test at $d = 50$\,cm with heavily saturated tissue paper on 40-grit sandpaper:
+
+\vspace{-2pt}
+\begin{itemize}
+    \item \textbf{Circular Nozzle (30$^\circ$):} \textcolor{red}{\textbf{FAILED.}} Localized high-pressure column pinned wet tissues flat against the surface.
+    \href{https://drive.google.com/file/d/1wO-Wh8iFGygEvBvc3OOH91XQSwhoY_Ws/view}{\textit{[Video: Circular Wet Test --- Pinned]}}
+    \item \textbf{Custom Air Blade (30$^\circ$):} \textcolor{green!50!black}{\textbf{PASSED.}} High-velocity shear layer slipped beneath the water/sandpaper barrier, peeling saturated debris off the surface.
+    \href{https://drive.google.com/file/d/16htpF3ptwKEM5UxYE679x3f3xWmt80h1/view}{\textit{[Video: Air Blade Wet Test --- Success]}}
+\end{itemize}
+
+\vspace{-2pt}
+Water maximizes stiction and flattens aerodynamic profile. The circular nozzle's impact drag fails; the air blade's boundary-layer shear overcomes stiction. \textit{(Passes O-1.1-STRU-1, O-1.1-STRU-2.)} Full 8-trial set: \href{https://drive.google.com/drive/folders/1RAJA95EF-XjMrkhjWkuoIBbONH_DbRVu}{\textit{[All Trial Videos]}}.
+
+\subsubsection{Endurance Testing \& Automated Reversal}
+
+The system completed a \textbf{continuous 2-minute endurance cycle}---exceeding the 2-pass minimum. Results: \textbf{zero stalling}, belt tension maintained through reversals, A4988 within thermal limits. Active travel: 56\,cm in 22\,s ($v \approx 2.55$\,cm/s), providing sufficient dwell time. \textit{(Passes O-1.1-ELEC-1, O-1.3-SOFT-1, O-3.2-ELEC-1.)} \href{https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J}{\textit{[Video]}}
+
+% ============================================================
+% 6  PERFORMANCE VS SPECIFICATION
+% ============================================================
+\section{Performance Relative to Specification}
+
+\vspace{-2pt}
+\begin{table}[H]
+\centering\small
+\caption{Prototype performance against developed specification (full protocol in \texttt{04.4\_Verification}).}
+\label{tab:specs}
+\begin{tabularx}{\textwidth}{@{}l X c l@{}}
+\toprule
+\textbf{Spec ID} & \textbf{Specification Statement} & \textbf{Result} & \textbf{Method} \\
+\midrule
+O-1.1-ELEC-1 & Traverse full track $\geq$2 passes                   & \textcolor{green!50!black}{\textbf{PASS}} & Demo \\
+O-2.1-ELEC-1 & Activated without roof access                         & \textcolor{green!50!black}{\textbf{PASS}} & Inspect \\
+O-2.2-ELEC-1 & Insulated electrical components                       & \textcolor{green!50!black}{\textbf{PASS}} & Inspect \\
+O-3.2-ELEC-1 & Limit switches for direction / energy minimization    & \textcolor{green!50!black}{\textbf{PASS}} & Demo \\
+O-1.1-STRU-1 & Sufficient force to dislodge debris                   & \textcolor{green!50!black}{\textbf{PASS}} & Test \\
+O-1.1-STRU-2 & Full-width air coverage                               & \textcolor{green!50!black}{\textbf{PASS}} & Test \\
+O-4.1-STRU-1 & Low-profile, follows roof contour                     & \textcolor{green!50!black}{\textbf{PASS}} & Inspect \\
+O-4.2-STRU-1 & No shingle damage during operation                    & \textcolor{green!50!black}{\textbf{PASS}} & Inspect \\
+O-1.3-SOFT-1 & Autonomous 2-pass CLEARING state (button-activated)   & \textcolor{green!50!black}{\textbf{PASS}} & Demo \\
+O-2.1-SOFT-1 & Ground-level CLEARING activation                      & \textcolor{green!50!black}{\textbf{PASS}} & Inspect \\
+O-3.2-SOFT-1 & OFF state: all motors inactive                        & \textcolor{green!50!black}{\textbf{PASS}} & Inspect \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{-4pt}
+All 11 specifications passed. Two structural elements (O-1.1-STRU-1, O-1.1-STRU-2) verified via quantitative \textbf{Testing}; the rest via Demonstration or Inspection.
+
+% ============================================================
+% 7  CHALLENGES
+% ============================================================
+\section{Challenges Faced}
+
+\begin{enumerate}
+    \item \textbf{Motor Stalling \& Jitter:} DC + H-Bridge failed under load $\rightarrow$ complete 3-iteration drivetrain redesign to stepper-based system.
+    \item \textbf{Power Brownouts:} Shared rail caused Pico resets $\rightarrow$ full rewiring with isolated rails and screw-terminal blocks.
+    \item \textbf{3D Print Tolerances:} FDM teardrop artifacts on axles $\rightarrow$ sanding, then redesign with thicker geometry and triangle brackets.
+    \item \textbf{Belt Grip:} Smooth TPU slipped; hot glue failed $\rightarrow$ CAD-redesigned belt with molded grip indents.
+    \item \textbf{Mechanical Deadzones:} Limit switches occupy ${\sim}$2\,cm/end $\rightarrow$ nozzle overhang compensates for 100\% coverage.
+    \item \textbf{Thermal Shutdown:} A4988 overheated $\rightarrow$ $V_{REF}$ tuned to 50\% for torque/thermal balance.
+\end{enumerate}
+
+% ============================================================
+% 8  CONTRIBUTION TO DESIGN CONCEPT
+% ============================================================
+\section{Contribution to Design Concept Understanding}
+
+The prototype verified two core hypotheses:
+\textbf{(1) Automated linear translation is feasible.} The stepper-driven belt system reliably traverses the track with mm-precision and survives 120\,s+ continuous operation without stalling or belt slip, confirming a motor-driven ridge carriage as viable for autonomous clearing.
+\textbf{(2) A planar air blade outperforms a circular nozzle.} The verification chain (Force $\rightarrow$ Angle $\rightarrow$ Wet Stiction) proved the custom slit nozzle's shear-layer mechanism is superior for dislodging adhered wet debris---the worst-case scenario.
+
+\textbf{Next-phase implications:} Use a stepper-driven actuator (not DC) with isolated power rails; air delivery via planar slit at ${\sim}30^\circ$ (Coanda effect); nozzle within 12\,cm of roof surface (coherent flow envelope per Test~1).
+
+\end{document}

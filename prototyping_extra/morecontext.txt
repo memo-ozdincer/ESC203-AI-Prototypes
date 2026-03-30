@@ -1,0 +1,32 @@
+Help me polish up, combine and make the prototype overview document perfect. Right now its all scattered all over the place.
+
+Some more iterations: List of Changes During Final Integration
+1. Motor Substitution: The drivetrain replaced a previously considered direct-drive DC motor approach, which was abandoned due to an inability to perform accurate time-based dead reckoning. By utilizing a Nema 17 stepper architecture, the microcontroller can command an exact number of steps, translating to millimeter-perfect linear actuation regardless of the variable mass or friction of the carriage. (Reference Artifact: Iteration 1 - DC Motor/Breadboard) 2. Circuit Evolution (H-Bridge to A4988): Initial integration attempts utilized a standard L298N H-Bridge to drive the DC motor. However, due to the high mass of the carriage and the friction of the continuous track, the H-Bridge suffered extreme voltage drops, resulting in motor stalling and severe jitter. The final integration completely replaced this architecture with an A4988 Stepper Driver and screw-terminal power distribution blocks. This eliminated the jitter and provided the necessary micro-stepping torque. (Reference Artifact: Iteration 2 - H-Bridge Board) (Reference Artifact: Final Architecture - Stepper + A4988) (Reference Artifact: Video of Motor Jitter Failure) 3. Power Segregation:** A critical integration hurdle was managing the power distribution. Initial integration attempts revealed that pulling high continuous current for the Nema 17 motor would cause logic brownouts if the
+Google Docs
+DC_Motor_Breadboard_Iteration1.jpeg
+Google Docs
+HBridge_Motor_Iteration2.jpeg
+Google Docs
+Stepper_A4988_ScrewTerminals_Final.jpeg
+	1	motor and microcontroller shared a power rail. Consequently, the system was physically segregated: the logic operates on an isolated 5V USB source, while the motor operates on a dedicated 12V DC wall adapter.
+	4	Thermal Tuning:
+	2	To ensure the system could run continuously without entering thermal shutdown, the A4988 driver's current-limiting potentiometer ($V_{REF}$) was manually tuned back to approximately 50% capacity, capping the current to prevent the IC from overheating while maintaining holding torque.
+	5	Firmware State-Machine Integration:
+	3	The CircuitPython logic was upgraded from simple time-based delays to a reactive, interrupt-style state machine. The firmware now actively polls the hardware limit switches (GP15 and GP16) via internal pull-up resistors. When a switch is driven LOW, the logic instantly reverses the A4988 DIR pin rather than waiting for a predefined time loop to finish. This guarantees the carriage will not overrun the track and break the timing belt.
+	6	Hardware Deadzone Verification:
+	4	During final assembly, we realized the physical limit switches occupied ~2cm of track space on either end, creating a mechanical "deadzone." To compensate, the final integration involved intentionally overhanging the nozzle by 2cm on either side of the carriage mount, guaranteeing 100% surface clearing despite the mechanical travel limits.
+	1	Go check the Memo_Draft_Phase3_Prototyping_v2 right now. Here is exactly what I just injected:
+	1	Under 5.3 Integrate (List of Changes):
+	2	I pulled the "Systems Integration & Mechanical Verification" section from our master_verification_document.tex and formatted it into a numbered "List of Changes During Integration" block:
+	◦	Motor Substitution (DC vs. Stepper dead reckoning)
+	◦	Power Segregation (5V logic vs 12V motor to prevent brownouts)
+	◦	Thermal Tuning (dialing back the $V_{REF}$ to 50%)
+	2	Under 5.4 Verification (Prototype Verification):
+	3	I dropped in the heavy fluid dynamics text right underneath the initial kinematics additions:
+	◦	5.4.3 Endurance Testing & Automated Reversal (The 2-minute limit switch test logic).
+	◦	5.4.4 Aerodynamic Vector Justification (The full $30^\circ$ $F_x/F_y$ breakdown, explaining why shallower/steeper angles fail).
+	◦	5.4.5 Experimental Setup & Wet Debris Stiction Test (The 40-grit sandpaper setup and the exact failure of the circular nozzle vs success of the air blade).
+	4	All the text from the LaTeX is now sitting there plain as day under [FROM LATEX: ...] headers. You can literally just style the fonts, add your pictures, delete my bracketed headers, and you are 100% finished with this document! How does it look?
+
+Please do the final in LaTeX (but helvetica) so that you can do clever things such as making substitutions/iterations side by side, and other visual candy/nice organization stuff. Make sure there's either links to the gdrive stuff OR it's directly in the TeX
+

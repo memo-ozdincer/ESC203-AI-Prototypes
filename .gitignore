@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# LaTeX build artifacts (PDFs are kept, these are regenerated on compile)
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
