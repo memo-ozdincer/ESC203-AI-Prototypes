@@ -1,0 +1,62 @@
+Video & Photo Artifact Index -- Team 0109D (StepUp)
+ESC204 Design Dossier Submission 2
+
+This document indexes all video and photo artifacts referenced in the Prototype Overview 
+and Verification Protocol. Videos are stored on Google Drive; photos are in the dossier folders.
+
+============================
+TRACK & INTEGRATION VIDEOS
+============================
+Location in Dossier: 04_Prototype/track videos/ and 04.3_Integration/
+
+Track_Main_Continuous_Cycle.mov    -- Full 2-minute endurance test. Demonstrates O-1.1-ELEC-1 (traverse >= 2 passes), O-1.3-SOFT-1 (autonomous CLEARING state), O-3.2-ELEC-1 (limit switch direction reversal).
+Track_Short_Overview.mov           -- Brief overview of the track system in operation.
+Stopping_at_end_of_cycle.mp4       -- Demonstrates the 4-cycle auto-stop (O-3.2-SOFT-1: OFF state).
+MotorDrivenNozzleCarriage.mov      -- Nozzle carriage being driven by motor along the track.
+V2RidgeTrackMovement.MOV           -- V2 track system movement after pulley redesign.
+TensionInAxlePulley.mov            -- Shows the V1 axle tension problem that led to the redesign.
+StruggleswithMovementTrackwithNozzleCart.mov  -- V1 integration struggle (jitter, slipping).
+FixedStruggleswithMovementTrackwithNozzleCart.MOV -- Same test after V2 fixes applied.
+
+Google Drive folder: https://drive.google.com/drive/folders/1wNK_jYUvHXoMne_cIdYbAIURdvYpuG-J
+
+============================
+AIR BLADE VERIFICATION VIDEOS
+============================
+Location in Dossier: 04_Prototype/circular_vs_nozzle/
+
+Test 2 (Dry Debris, Distance Optimization):
+  circular_distance1_test.mov      -- Circular nozzle at d=10cm (close)
+  circular_distance2_test.mov      -- Circular nozzle at d=25cm (medium)
+  circular_distance3_test.mov      -- Circular nozzle at d=50cm (far)
+  nozzle_distance1_test.mov        -- Custom Air Blade at d=10cm (close)
+  nozzle_distance2_test.mov        -- Custom Air Blade at d=25cm (medium)
+  nozzle_distance3_test.mov        -- Custom Air Blade at d=50cm (far)
+
+Test 3 (Wet Debris, Stiction Stress Test at d=50cm):
+  circular_wet_test.mov            -- Circular nozzle: FAILED. Pinned wet tissue.
+  nozzle_wet_test.mov              -- Custom Air Blade: PASSED. Peeled wet debris.
+
+Google Drive folder: https://drive.google.com/drive/folders/1RAJA95EF-XjMrkhjWkuoIBbONH_DbRVu
+Direct links:
+  Circular wet (FAIL): https://drive.google.com/file/d/1wO-Wh8iFGygEvBvc3OOH91XQSwhoY_Ws/view
+  Air Blade wet (PASS): https://drive.google.com/file/d/16htpF3ptwKEM5UxYE679x3f3xWmt80h1/view
+
+============================
+PHOTO ARTIFACTS
+============================
+
+04.2_Build/Electronics/:
+  DC_Motor_Breadboard_Iteration1.jpeg     -- Electrical Iter 1: DC motor, breadboard, 9V battery
+  HBridge_Motor_Iteration2.jpeg           -- Electrical Iter 2: DC gearmotor (yellow) vs Nema 17 stepper
+  Stepper_A4988_ScrewTerminals_Final.jpeg -- Final: Nema 17 + A4988 + screw terminal power blocks
+
+04.3_Integration/:
+  V1BrokenPulleyAxle.HEIC                -- V1 axle failure: bent under belt tension
+  V1vsV2PulleyAxle.HEIC                  -- Side-by-side: V1 thin axle vs V2 thick axle
+  V2RidgeTrackSystem(newAxle&Connection).HEIC -- V2 assembled system with new axles
+  OldTimingBelt.png                       -- V1 smooth TPU belt (slipped)
+  BeltWithIndentations.HEIC               -- V2 indented TPU belt (grips)
+
+04.4_Verification/:
+  ClosureElectrical.png                   -- Insulated electronics enclosure (O-2.2-ELEC-1)
