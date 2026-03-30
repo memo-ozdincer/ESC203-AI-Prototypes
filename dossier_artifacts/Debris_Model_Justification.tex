@@ -1,5 +1,5 @@
 % ============================================================
-% DEBRIS MODEL JUSTIFICATION — Team 0109D — 04.4_Verification
+% DEBRIS MODEL JUSTIFICATION -- Team 0109D -- 04.4_Verification
 % ============================================================
 \documentclass[12pt, letterpaper]{article}
 \usepackage[margin=0.5in]{geometry}
@@ -25,42 +25,42 @@
 
 \begin{center}
 {\Large\textbf{Debris Analogue Selection Justification}}\\[2pt]
-{\normalsize Team 0109D \quad$\vert$\quad ESC204 --- Praxis III \quad$\vert$\quad Winter 2026}
+{\normalsize Team 0109D \quad$\vert$\quad ESC204 \quad$\vert$\quad Winter 2026}
 \end{center}
 \noindent\rule{\textwidth}{0.6pt}\vspace{6pt}
 
-\section{Problem Statement}
+\section{Why We Needed a Debris Analogue}
 
-The prototype must verify that the air blade can dislodge \textit{wet, adhered organic debris} from a surface that replicates asphalt shingles. Real autumn leaves at full scale do not behave identically on a 35\,cm mock-up, so the debris model must replicate the two critical failure modes that make roof debris difficult to clear pneumatically:
+We need to verify that the air blade can dislodge \textit{wet, adhered organic debris} from a surface that replicates asphalt shingles. Real autumn leaves at full scale don't behave the same way on a 35\,cm mock-up, so we needed a material that replicates the two things that actually make wet roof debris hard to clear:
 
 \begin{enumerate}
-    \item \textbf{High stiction when wet.} Wet leaves adhere to shingles via surface tension and capillary forces at the debris--surface interface. The analogue must replicate this water-film bonding against a rough substrate.
-    \item \textbf{Low aerodynamic profile when saturated.} Wet leaves flatten against the roof, eliminating protruding edges that airflow can ``grab.'' The analogue must become flat and featureless when wet.
+    \item \textbf{Stiction when wet.} Wet leaves stick to shingles through surface tension and capillary forces at the contact interface. Whatever we use has to bond to a rough surface the same way when soaked.
+    \item \textbf{Flat profile when saturated.} Wet leaves press flat against the roof. There are no protruding edges for air to get under. The analogue needs to go completely flat when wet too.
 \end{enumerate}
 
-\section{Selected Analogue: Disaggregated Tissue Paper on 40-Grit Sandpaper}
+\section{What We Used: Tissue Paper on 40-Grit Sandpaper}
 
-\subsection*{Surface Substrate: 40-Grit Aluminum Oxide Sandpaper}
+\subsection*{The Surface: 40-Grit Aluminum Oxide Sandpaper}
 
-Standard 40-grit aluminum oxide sandpaper has a mean surface roughness on the order of $R_a \approx 400$--$500\,\mu$m. This is comparable to the granule size and surface profile of asphalt roofing shingles, which use embedded mineral granules (typically 0.5--1.5\,mm) to create a rough, high-friction surface. The sandpaper replicates the coefficient of static friction that governs debris adhesion on a real roof.
+40-grit sandpaper has a mean surface roughness around $R_a \approx 400$--$500\,\mu$m. Asphalt roofing shingles use embedded mineral granules (typically 0.5--1.5\,mm) that produce a similar rough, high-friction texture. The sandpaper gives us a comparable coefficient of static friction to what debris actually encounters on a real roof.
 
-\subsection*{Debris Model: Disaggregated Tissue Paper}
+\subsection*{The Debris: Disaggregated Tissue Paper}
 
-Tissue paper was disaggregated (separated into individual thin layers and small pieces) and placed across the 15\,cm-wide mock-up surface. This model was tested in two states:
+We separated tissue paper into individual thin layers and small pieces, then spread them across the 15\,cm-wide mock-up. We tested in two conditions:
 
 \begin{itemize}
-    \item \textbf{Dry state:} Light, low-mass fragments that are easily displaced. This baseline confirms that the air source produces sufficient force magnitude for loose debris---analogous to dry leaves in autumn.
-    \item \textbf{Saturated (wet) state:} Tissue paper soaked in water and pressed onto the 40-grit surface. In this state, the tissue exhibits:
+    \item \textbf{Dry:} Light fragments, easy to blow off. This just confirms the air source has enough raw force for loose debris, similar to dry leaves.
+    \item \textbf{Saturated (wet):} Tissue soaked in water and pressed onto the 40-grit surface. Once wet, the tissue:
     \begin{itemize}
-        \item \textbf{Zero structural rigidity}---it conforms perfectly to every grain of the sandpaper, maximizing the real contact area and capillary bonding.
-        \item \textbf{Near-zero aerodynamic profile}---the saturated tissue lies completely flat with no protruding edges, eliminating any surface for impact drag to act on.
-        \item \textbf{Maximum surface-tension adhesion}---the water film between tissue and sandpaper creates the same capillary stiction mechanism as rainwater between a wet leaf and an asphalt shingle.
+        \item Has \textbf{zero structural rigidity}: it conforms to every single grain of the sandpaper, maximizing contact area and capillary bonding
+        \item Has \textbf{no aerodynamic profile}: lies completely flat with nothing sticking up for air to grab
+        \item Creates \textbf{strong surface-tension adhesion}: the water film between tissue and sandpaper produces the same capillary stiction as rain between a wet leaf and a shingle
     \end{itemize}
 \end{itemize}
 
-\section{Why This Is a Conservative (Worst-Case) Test}
+\section{This Is Actually Harder Than Real Leaves}
 
-Saturated tissue paper on 40-grit sandpaper is \textbf{harder to clear than real wet leaves on real shingles} for the following reasons:
+Saturated tissue on 40-grit sandpaper is \textbf{harder to clear than real wet leaves on real shingles}:
 
 \begin{table}[h]
 \centering\small
@@ -68,24 +68,24 @@ Saturated tissue paper on 40-grit sandpaper is \textbf{harder to clear than real
 \toprule
 \textbf{Property} & \textbf{Real Wet Leaf} & \textbf{Saturated Tissue on 40-Grit} \\
 \midrule
-Structural rigidity & Some (veins, stem) & Zero (conforms to every grain) \\
-Contact area fraction & Partial (leaf curvature) & Near-total (flat, flexible) \\
+Structural rigidity & Some (veins, stem) & None (conforms to every grain) \\
+Contact area & Partial (leaf curvature) & Near-total (completely flat) \\
 Aerodynamic profile & Low but nonzero & Effectively zero \\
-Edge availability for air & Some edges lift & No edges available \\
+Edges for air to grab & Some edges lift & No edges at all \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Conclusion:} If the Custom Air Blade can peel saturated tissue paper off 40-grit sandpaper at $d = 50$\,cm, it will clear real wet leaves off real asphalt shingles under equivalent or easier conditions. The tissue paper model constitutes a deliberately conservative stress test that bounds the worst-case operational scenario.
+So if the air blade can peel saturated tissue off sandpaper at $d = 50$\,cm, it will definitely handle real wet leaves on real shingles. The tissue paper model is a deliberately conservative worst-case test.
 
-\section{Test Results Summary}
+\section{Results}
 
 At $d = 50$\,cm on saturated tissue / 40-grit sandpaper:
 \begin{itemize}
-    \item \textbf{Circular Nozzle:} \textcolor{red}{\textbf{FAILED.}} The high-pressure column pinned the flat, wet tissue against the surface. \href{https://drive.google.com/file/d/1wO-Wh8iFGygEvBvc3OOH91XQSwhoY_Ws/view}{\textit{[Video]}}
-    \item \textbf{Custom Air Blade:} \textcolor{green!50!black}{\textbf{PASSED.}} The planar shear layer penetrated beneath the water--sandpaper interface and peeled the debris. \href{https://drive.google.com/file/d/16htpF3ptwKEM5UxYE679x3f3xWmt80h1/view}{\textit{[Video]}}
+    \item \textbf{Circular Nozzle:} \textcolor{red}{\textbf{FAILED.}} The high-pressure column just pushed the flat, wet tissue harder against the surface. \href{https://drive.google.com/file/d/1wO-Wh8iFGygEvBvc3OOH91XQSwhoY_Ws/view}{\textit{[Video]}}
+    \item \textbf{Custom Air Blade:} \textcolor{green!50!black}{\textbf{PASSED.}} The planar shear layer got underneath the water-sandpaper interface and peeled the debris off. \href{https://drive.google.com/file/d/16htpF3ptwKEM5UxYE679x3f3xWmt80h1/view}{\textit{[Video]}}
 \end{itemize}
 
-This validates that the Custom Air Blade's Coanda-effect shear mechanism overcomes worst-case stiction, confirming Specifications O-1.1-STRU-1 and O-1.1-STRU-2.
+This confirms that the air blade's Coanda-effect shear mechanism can overcome worst-case stiction (Specifications O-1.1-STRU-1 and O-1.1-STRU-2).
 
 \end{document}

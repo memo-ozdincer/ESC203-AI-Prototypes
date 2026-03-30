@@ -1,5 +1,5 @@
 % ============================================================
-% AIR SOURCE ABSTRACTION JUSTIFICATION — Team 0109D — 04.4_Verification
+% AIR SOURCE ABSTRACTION JUSTIFICATION -- Team 0109D -- 04.4_Verification
 % ============================================================
 \documentclass[12pt, letterpaper]{article}
 \usepackage[margin=0.5in]{geometry}
@@ -25,26 +25,28 @@
 
 \begin{center}
 {\Large\textbf{Air Source Abstraction Justification}}\\[2pt]
-{\normalsize Team 0109D \quad$\vert$\quad ESC204 --- Praxis III \quad$\vert$\quad Winter 2026}
+{\normalsize Team 0109D \quad$\vert$\quad ESC204 \quad$\vert$\quad Winter 2026}
 \end{center}
 \noindent\rule{\textwidth}{0.6pt}\vspace{6pt}
 
-\section{Design Concept vs.\ Prototype Abstraction}
+\section{What We Changed and Why}
 
-The final Design Concept specifies a dedicated \textbf{air compressor} as the pressure source, delivering airflow through ducting to the ridge-mounted nozzle carriage. For the Phase~3 prototype, this was abstracted to a \textbf{Dyson hair dryer} (max airflow setting, cool mode). This section justifies why this abstraction is valid and does not compromise the verification results.
+Our Design Concept specifies a dedicated \textbf{air compressor} delivering airflow through ducting to the ridge-mounted nozzle carriage. For the prototype, we used a \textbf{Dyson hair dryer} on max airflow (cool mode) instead. This document explains why that substitution is valid.
 
-\section{Why Abstract the Air Source?}
+\section{What We're Actually Testing}
 
-The prototype's purpose is to verify two independent hypotheses:
+The prototype verifies two things:
 
 \begin{enumerate}
-    \item \textbf{Mechanical translation:} Can a stepper-driven belt carriage reliably traverse a ridge track? --- This is independent of the air source entirely.
-    \item \textbf{Nozzle fluid dynamics:} Does a planar slit geometry outperform a circular geometry for surface clearing? --- This depends on \textit{flow characteristics at the nozzle exit}, not on what generates the flow upstream.
+    \item \textbf{Can the track move the carriage reliably?} This has nothing to do with the air source.
+    \item \textbf{Does a planar slit nozzle clear better than a circular one?} This depends on the flow characteristics \textit{at the nozzle exit}, not on what's generating the flow upstream.
 \end{enumerate}
 
-The air compressor is a \textit{commodity component selection problem} (choosing a compressor that meets CFM/PSI specs), not a \textit{design verification problem}. Procuring, plumbing, and integrating a compressor within the prototype budget and timeline would consume resources without testing any novel engineering hypothesis. The Dyson provides continuous, high-volume airflow that allows us to isolate and test the nozzle geometry --- the actual design variable.
+Picking the right compressor is a component selection problem (match the CFM/PSI spec), not a design question. Spending budget and time on plumbing a compressor would not have tested anything new. The Dyson gives us continuous, high-volume airflow so we can focus on the nozzle geometry, which is the actual design variable we need to verify.
 
-\section{Why the Dyson Is a Valid Stand-In}
+We originally planned to use a ball pump, but quickly realized it only produces pulsed, low-volume bursts. You can't create a sustained boundary-layer shear with a ball pump. The team decided to switch to the Dyson early in Phase 3 because it provides the continuous flow regime that the final compressor will also provide.
+
+\section{Comparing the Dyson to the Final Compressor}
 
 \begin{table}[h]
 \centering\small
@@ -53,36 +55,36 @@ The air compressor is a \textit{commodity component selection problem} (choosing
 \textbf{Property} & \textbf{Final Compressor} & \textbf{Dyson (Prototype)} \\
 \midrule
 Flow type & Continuous & Continuous \\
-Volume (CFM) & High (design spec TBD) & High ($\sim$13 L/s) \\
+Volume (CFM) & High (spec TBD) & High ($\sim$13 L/s) \\
 Pressure delivery & Steady-state & Steady-state \\
-Force output & Design-dependent & Measured: $\sim$1.96\,N at 12\,cm \\
-Controllability & On/off via relay & On/off manual (sufficient for test) \\
+Force output & Design-dependent & Measured at $\sim$1.96\,N at 12\,cm \\
+Control & On/off via relay & On/off manual (fine for testing) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The critical parameter is \textbf{continuous, steady-state volumetric flow} through the nozzle. Both the Dyson and a compressor deliver this. The Dyson was explicitly chosen over alternatives like a ball pump (pulsed, low-volume, unsuitable for boundary-layer shear) or a shop vacuum (variable pressure, difficult to control).
+The important thing is continuous, steady-state volumetric flow through the nozzle. Both the Dyson and a compressor provide this.
 
-\section{What This Abstraction Validates and Does Not Validate}
+\section{What This Lets Us Verify (and What It Doesn't)}
 
-\textbf{Validated by prototype testing:}
+\textbf{Verified with the Dyson:}
 \begin{itemize}
-    \item Nozzle geometry comparison (planar slit vs.\ circular) at equivalent input flow
+    \item Planar slit vs.\ circular nozzle comparison at equivalent input flow
     \item 30$^\circ$ angle of attack optimization (Coanda effect, $F_x$/$F_y$ balance)
-    \item Wet debris stiction clearing capability at distance
-    \item Force conservation across nozzle geometries (mass-flow conservation)
+    \item Wet debris clearing at distance (the stiction stress test)
+    \item Force conservation across nozzle geometries (mass-flow conservation holds)
 \end{itemize}
 
-\textbf{Deferred to next phase (requires compressor selection):}
+\textbf{Left for the next phase (needs the real compressor):}
 \begin{itemize}
-    \item Final CFM/PSI specification for the compressor
-    \item Noise compliance (O-3.1-STRU-1: $<$70\,dBA at 3\,m) --- the Dyson exceeds this threshold, but it is not the production air source
-    \item Ducting pressure losses from compressor to ridge
-    \item Weatherproofing of the air supply path
+    \item Final CFM/PSI specification
+    \item Noise compliance (O-3.1-STRU-1: $<$70\,dBA at 3\,m). The Dyson is too loud, but it's not the production air source
+    \item Pressure losses through the ducting from compressor to ridge
+    \item Weatherproofing the air supply path
 \end{itemize}
 
-\section{Precedent}
+\section{Summary}
 
-This abstraction follows standard prototyping practice: isolate the design variable (nozzle geometry) from commodity components (air source) to focus verification effort on the novel engineering contribution. The team consensus to pivot from the originally planned ball pump to the Dyson was made early in Phase~3 to ensure all verification tests could use a continuous, high-volume source representative of the final system's operating regime.
+The standard prototyping approach is to isolate the design variable from commodity components. The nozzle geometry is our novel contribution; the air source is off-the-shelf. The Dyson lets us test what matters without burning budget on something we'd just be buying, not designing.
 
 \end{document}
